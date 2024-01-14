@@ -1,4 +1,4 @@
 git pull
 git add .
-git commit -m "base II"
+git commit -m "start gravitation character"
 git push
