@@ -16,6 +16,13 @@ class Coin extends MovableObject {
     this.animate();
   }
 
+
+
+
+
+
+
+
   //   animate() {
   //     setInterval(() => {
   //       this.playAnimation(this.IMAGES_COIN);
@@ -25,10 +32,6 @@ class Coin extends MovableObject {
   animate() {
     setInterval(() => {
       this.playAnimation(this.IMAGES_COIN);
-
-      // Skalierungsfaktor ändern, um 3D-Rotation zu simulieren
-      this.scale = 0.5 + Math.abs(Math.cos(Date.now() / 500)) * 0.5;
-      this.width = this.originalWidth * this.scale; // Breite basierend auf dem Skalierungsfaktor anpassen
     }, 200);
   }
 }

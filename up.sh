@@ -1,4 +1,4 @@
 git pull
 git add .
-git commit -m "start gravitation character"
+git commit -m "collision detection ready, next cause damage"
 git push

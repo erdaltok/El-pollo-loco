@@ -16,10 +16,21 @@ class World {
     this.createChicks();
     this.addBottlesOnGround();
     this.addCoins();
+    this.checkCollisions();
   }
 
   setWorld() {
     this.character.world = this;
+  }
+
+  checkCollisions() {
+   setInterval(() => {
+     this.level.enemies.forEach((enemy) => {
+       if (this.character.isColliding(enemy)) {
+         console.log('Collision with Character', enemy)
+       }
+      });
+   }, 200); 
   }
 
   draw() {
@@ -46,43 +57,17 @@ class World {
     });
   }
 
-  //   addToMap(mo) {
-  //     if (mo.otherDirection) {
-  //       this.flipImage(mo);
-  //       // this.ctx.save();
-  //       // this.ctx.translate(mo.width, 0);
-  //       // this.ctx.scale(-1, 1);
-  //       // mo.x = mo.x * -1;
-  //     }
-  //     this.ctx.drawImage(mo.img, mo.x, mo.y, mo.width, mo.height);
-  //     if (mo.otherDirection) {
-  //       mo.x = mo.x * -1;
-  //       this.ctx.restore();
-  //     }
-  //   }
-
   addToMap(mo) {
-     if (mo instanceof Coin) {
-       this.ctx.save();
-       this.ctx.translate(mo.x + mo.width / 2, mo.y + mo.height / 2);
-       this.ctx.drawImage(
-         mo.img,
-         -mo.width / 2,
-         -mo.height / 2,
-         mo.width,
-         mo.height
-       );
-       this.ctx.restore();
-     } else {
-       if (mo.otherDirection) {
-         this.flipImage(mo);
-       }
-       this.ctx.drawImage(mo.img, mo.x, mo.y, mo.width, mo.height);
-       if (mo.otherDirection) {
-         mo.x = mo.x * -1;
-         this.ctx.restore();
-       }
-     }
+    if (mo.otherDirection) {
+      this.flipImage(mo);
+    }
+
+    mo.draw(this.ctx);
+    mo.drawFrame(this.ctx);
+
+    if (mo.otherDirection) {
+      this.flipImageBack(mo);
+    }
   }
 
   flipImage(mo) {
@@ -92,12 +77,10 @@ class World {
     mo.x = mo.x * -1;
   }
 
-  //   flipImage(mo) {
-  //     this.ctx.save();
-  //     this.ctx.translate(mo.width, 0);
-  //     this.ctx.scale(-1, 1);
-  //     mo.x = mo.x * -1;
-  //   }
+  flipImageBack(mo) {
+    mo.x = mo.x * -1;
+    this.ctx.restore();
+  }
 
   createChickens() {
     let startPosition = 720;
@@ -114,7 +97,7 @@ class World {
   createChicks() {
     let startPosition = 780;
     let endPosition = 3050;
-    let spacing = 300;
+    let spacing = 450;
 
     for (let x = startPosition; x <= endPosition; x += spacing) {
       let chicks = new Chicks();
@@ -136,9 +119,9 @@ class World {
   }
 
   addCoins() {
-    let startPosition = 700; 
-    let endPosition = 2800; 
-    let spacing = 300; 
+    let startPosition = 700;
+    let endPosition = 2800;
+    let spacing = 300;
 
     for (let x = startPosition; x <= endPosition; x += spacing) {
       const coin = new Coin();
