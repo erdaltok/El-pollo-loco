@@ -22,7 +22,7 @@ class Character extends MovableObject {
     "img/2_character_pepe/3_jump/J-37.png",
     "img/2_character_pepe/3_jump/J-38.png",
     "img/2_character_pepe/3_jump/J-39.png",
-   ];
+  ];
 
   IMAGES_DEAD = [
     "img/2_character_pepe/5_dead/D-51.png",
@@ -53,6 +53,14 @@ class Character extends MovableObject {
     this.applyGravity();
     this.animate();
   }
+
+  isAboveGround() {
+    return this.y < 177;
+  }
+
+  // isAbove(object) {
+  //   return this.y + this.height < object.y;
+  // }
 
   animate() {
     setInterval(() => {

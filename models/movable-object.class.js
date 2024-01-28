@@ -6,20 +6,36 @@ class MovableObject extends DrawableObject {
   energy = 100;
   lastHit = 0;
 
+  // applyGravity() {
+  //   setInterval(() => {
+  //     if (this.isAboveGround() || this.speedY > 0) {
+  //       this.y -= this.speedY;
+  //       this.speedY -= this.acceleration;
+  //     }
+  //   }, 1000 / 25);
+  // }
+
   applyGravity() {
     setInterval(() => {
       if (this.isAboveGround() || this.speedY > 0) {
         this.y -= this.speedY;
         this.speedY -= this.acceleration;
       }
+      if (this.y > 177) {
+        // Stellen Sie sicher, dass der Charakter nicht unter y = 177 fällt
+        this.y = 177;
+      }
     }, 1000 / 25);
   }
 
   isAboveGround() {
-    return this.y < 177;
+    if (this instanceof ThrowableObject) {
+      // Throwable object should always fall
+      return true;
+    } else {
+      return this.y < 177;
+    }
   }
-
-
 
   // character.isColliding(chicken)
   isColliding(mo) {
@@ -30,6 +46,8 @@ class MovableObject extends DrawableObject {
       this.y < mo.y + mo.height
     );
   }
+
+
 
   hit() {
     this.energy -= 5;

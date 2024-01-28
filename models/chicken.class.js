@@ -9,29 +9,33 @@ class Chicken extends MovableObject {
     "img/3_enemies_chicken/chicken_normal/1_walk/3_w.png",
   ];
 
-  // constructor() {
-  //   super().loadImage("img/3_enemies_chicken/chicken_normal/1_walk/1_w.png");
-  //   this.loadImages(this.IMAGES_WALKING);
-  //   this.x = 200 + Math.random() * 500;
-  //   this.speed = 0.15 + Math.random() * 0.28;
-  //   this.animate();
-  // }
+  dead = false;
 
   constructor() {
     super().loadImage("img/3_enemies_chicken/chicken_normal/1_walk/1_w.png");
     this.loadImages(this.IMAGES_WALKING);
-    // Der x-Wert wird in der World-Klasse gesetzt
     this.speed = 0.15 + Math.random() * 0.28;
     this.animate();
   }
 
+  // hitFromAbove() {
+  //   this.speed = 0; // Chicken stoppt
+  //   this.loadImage("img/3_enemies_chicken/chicken_normal/2_dead/dead.png");
+  // }
+
+ 
+
   animate() {
-    setInterval(() => {      
-      this.moveLeft();
+    setInterval(() => {
+      if (!this.dead) {
+        this.moveLeft();
+      }
     }, 1000 / 60);
 
     setInterval(() => {
-      this.playAnimation(this.IMAGES_WALKING);
+      if (!this.dead) {
+        this.playAnimation(this.IMAGES_WALKING);
+      }
     }, 1000 / 4.5);
   }
 }
