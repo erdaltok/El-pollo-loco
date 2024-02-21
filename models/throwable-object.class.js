@@ -1,3 +1,7 @@
+/**
+ * Represents a throwable object, such as a bottle, in the game.
+ * @extends MovableObject
+ */
 class ThrowableObject extends MovableObject {
   height = 65;
   width = 55;
@@ -22,6 +26,11 @@ class ThrowableObject extends MovableObject {
     "img/6_salsa_bottle/bottle_rotation/bottle_splash/6_bottle_splash.png",
   ];
 
+  /**
+   * Initializes a new throwable object with its position and images.
+   * @param {number} x - The starting x-coordinate of the object.
+   * @param {number} y - The starting y-coordinate of the object.
+   */
   constructor(x, y) {
     super().loadImage(
       "img/6_salsa_bottle/bottle_rotation/1_bottle_rotation.png"
@@ -32,6 +41,11 @@ class ThrowableObject extends MovableObject {
     this.y = y;
   }
 
+  /**
+   * Throws the bottle, applying gravity and moving it forward until it lands.
+   * Decreases the available bottles and updates the status bar accordingly.
+   * @param {World} world - The game world instance to interact with.
+   */
   throw(world) {
     if (world.availableBottles <= 0) return;
     this.bottleOnGround = false;
@@ -53,6 +67,10 @@ class ThrowableObject extends MovableObject {
     }, 1000 / 25);
   }
 
+  /**
+   * Handles the landing of the bottle, stopping its movement and playing the splash animation.
+   * @param {number} animationInterval - The interval ID to clear when the bottle lands.
+   */
   handleBottleLanding(animationInterval) {
     if (!this.bottleOnGround) {
       this.y = 380;
@@ -64,9 +82,13 @@ class ThrowableObject extends MovableObject {
     }
   }
 
+  /**
+   * Plays the splash animation of the bottle and executes a callback function if provided.
+   * @param {Function} [callback] - An optional callback function to execute after the animation.
+   */
   playSplashAnimation(callback) {
-    this.speedY = 0; 
-    this.speed = 0; 
+    this.speedY = 0;
+    this.speed = 0;
     let animationIndex = 0;
     const animation = () => {
       if (animationIndex < this.IMAGES_BOTTLE_SPLASH.length) {
@@ -79,22 +101,3 @@ class ThrowableObject extends MovableObject {
     animation();
   }
 }
-
- 
-
-
-
-
-
-
-
-
-    
-    
-    
-
-    
-    
-    
-    
-

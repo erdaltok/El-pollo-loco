@@ -2,6 +2,9 @@ let canvas;
 let world;
 let keyboard = new Keyboard();
 
+/**
+ * Initializes the game by setting up the canvas, hiding it initially, and initializing game controls.
+ */
 function init() {
   canvas = document.getElementById("canvas");
   world = null;
@@ -12,13 +15,17 @@ function init() {
   initMobileControls(); 
 }
 
+/**
+ * Starts the game by loading the first level, hiding the start screen, and displaying the game canvas.
+ */
 function startGame() {
   loadLevel1(() => {
     document.getElementById("startScreen").style.display = "none";
     document.getElementById("startButton").style.display = "none";
     document.getElementById("youLostContainer").style.display = "none";
     document.getElementById("gameOverContainer").style.display = "none";
-    document.getElementById("mobileControlContainer").style.display = "block";
+      document.getElementById("mobileControl").style.display = "flex";
+
     canvas.style.display = "block";
 
     if (!world) {
@@ -27,11 +34,14 @@ function startGame() {
       world.reset();
       world.resetEnemies();  
     }
-    console.log("My Character is", world.character);
   });
   
 }
 
+/**
+ * Loads the first level of the game. If the level script is not already loaded, it dynamically loads it.
+ * @param {Function} callback - Function to call after the level is loaded.
+ */
 function loadLevel1(callback) {
   if (typeof level1 === "undefined") {
     const script = document.createElement("script");
@@ -43,29 +53,38 @@ function loadLevel1(callback) {
   }
 }
 
+/**
+ * Returns to the main menu, hiding the game over and you lost containers, and showing the start screen.
+ */
 function backToMenu() {
   document.getElementById("youLostContainer").style.display = "none";
   document.getElementById("gameOverContainer").style.display = "none";
-
   document.getElementById("startScreen").style.display = "block"; 
   document.getElementById("startButton").style.display = "block";
   document.getElementById("controlInstructions").style.left = "64%";
   document.getElementById("controlInstructions").style.top = "100px";
+  document.getElementById("mobileControl").style.display = "none";
 }
 
+/**
+ * Handles the character's death by clearing all intervals, resetting enemies, and showing the "you lost" screen.
+ */
 function handleCharacterDeath() {
   if (world.character.isDead()) {
     world.clearAllIntervals(); 
     world.resetEnemies();
     canvas.style.display = "none"; 
     document.getElementById("youLostContainer").style.display = "block";
-    document.getElementById("mobileControlContainer").style.display = "none";
+    document.getElementById("mobileControl").style.display = "none";
     document.getElementById("controlInstructions").style.left = "50%";
     document.getElementById("controlInstructions").style.top = "70px";
     world = null;     
   }
 }
 
+/**
+ * Handles the end boss's death by clearing all intervals, resetting enemies, and showing the game over screen.
+ */
 function handleEndbossDeath() {
   if (world) {
     world.clearAllIntervals(); 
@@ -73,13 +92,16 @@ function handleEndbossDeath() {
 
     canvas.style.display = "none"; 
     document.getElementById("gameOverContainer").style.display = "block";
-    document.getElementById("mobileControlContainer").style.display = "none";
+    document.getElementById("mobileControl").style.display = "none";
     document.getElementById("controlInstructions").style.left = "50%";
     document.getElementById("controlInstructions").style.top = "70px";
     world = null; 
   }
 }
 
+/**
+ * Initializes music controls, allowing the player to toggle background music on and off.
+ */
 function initMusicControls() {
     const backgroundMusic = document.getElementById('backgroundMusic');
     const volumeOnIcon = document.getElementById('volumeOn');
@@ -101,7 +123,9 @@ function initMusicControls() {
     });
 }
 
-
+/**
+ * Enters fullscreen mode for the game, adjusting the display settings for a fullscreen experience.
+ */
 function fullscreen() {
   let fullscreen = document.getElementById("canvasContainer");
   let startScreen = document.getElementById("startScreen");
@@ -132,6 +156,9 @@ function fullscreen() {
   document.getElementById("defaultScreenSize").style.display = "block";
 }
 
+/**
+ * Exits fullscreen mode and returns to the default screen size and layout.
+ */
 function defaultScreen() {
   exitFullscreen();
    startButton.style.fontSize = "";
@@ -150,7 +177,10 @@ function defaultScreen() {
   document.getElementById("defaultScreenSize").style.display = "none";
 }
 
-
+/**
+ * Requests the browser to enter fullscreen mode for the specified element.
+ * @param {HTMLElement} element - The element to display in fullscreen mode.
+ */
 function enterFullscreen(element) {
   if (element.requestFullscreen) {
     element.requestFullscreen();
@@ -163,6 +193,9 @@ function enterFullscreen(element) {
   }
 }
 
+/**
+ * Exits fullscreen mode if currently active in the browser.
+ */
 function exitFullscreen() {
   if (document.exitFullscreen) {
     document.exitFullscreen();
@@ -171,10 +204,16 @@ function exitFullscreen() {
   }
 }
 
+/**
+ * Displays the control instructions overlay.
+ */
 function openControlInstructions() {
   document.getElementById("controlInstructions").style.display = "block";
 }
 
+/**
+ * Hides the control instructions overlay.
+ */
 function closeControlInstructions() {
   document.getElementById("controlInstructions").style.display = "none";
 }
@@ -241,6 +280,9 @@ window.addEventListener('keyup', (e) => {
   }
 });
 
+/**
+ * Initializes mobile controls by adding touch event listeners to the control buttons.
+ */
 function initMobileControls() {
   const btnThrow = document.getElementById("btn-throw");
   const btnUp = document.getElementById("btn-up");

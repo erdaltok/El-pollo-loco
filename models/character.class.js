@@ -1,3 +1,7 @@
+/**
+ * Represents the main character in the game.
+ * This class extends MovableObject to include movement and animation capabilities.
+ */
 class Character extends MovableObject {
   height = 250;
   width = 130;
@@ -81,12 +85,16 @@ class Character extends MovableObject {
   looseGameSound = new Audio("audio/loose_game_sound.mp3");
 
   fallAsleep = 0;
-  longIdleCounter = 0; 
-  longIdleAnimationSpeed = 4; 
-  idleAnimationSpeed = 10; 
-  idleCounter = 0; 
+  longIdleCounter = 0;
+  longIdleAnimationSpeed = 4;
+  idleAnimationSpeed = 10;
+  idleCounter = 0;
   longIdleAnimationSpeed = 8;
 
+  /**
+   * Constructor for the Character class.
+   * Loads initial images, sets gravity, and starts the animation loop.
+   */
   constructor() {
     super().loadImage("img/2_character_pepe/2_walk/W-21.png");
     this.loadImages(this.IMAGES_WALKING);
@@ -100,10 +108,17 @@ class Character extends MovableObject {
     this.animate();
   }
 
+  /**
+   * Checks if the character is above the ground.
+   * @returns {boolean} True if the character is in the air.
+   */
   isAboveGround() {
     return this.y < 177;
   }
 
+  /**
+   * Updates the character's movement state based on keyboard input.
+   */
   updateMovementState() {
     let isMoving = false;
 
@@ -133,11 +148,17 @@ class Character extends MovableObject {
     }
   }
 
+  /**
+   * Stops the walking sound effect.
+   */
   stopWalkingSound() {
     this.walking_sound.pause();
-    this.walking_sound.currentTime = 0; 
+    this.walking_sound.currentTime = 0;
   }
 
+  /**
+   * Resets the character's idle state counters and snoring sound.
+   */
   resetIdleState() {
     this.fallAsleep = 0;
     this.longIdleCounter = 0;
@@ -145,6 +166,9 @@ class Character extends MovableObject {
     this.manageSnoringSound(false);
   }
 
+  /**
+   * Increments the character's idle state counters.
+   */
   incrementIdleState() {
     this.fallAsleep += 1;
     if (this.fallAsleep > 600) {
@@ -153,6 +177,10 @@ class Character extends MovableObject {
     }
   }
 
+  /**
+   * Manages the playing and stopping of the snoring sound.
+   * @param {boolean} shouldSnore - Determines if the snoring sound should play.
+   */
   manageSnoringSound(shouldSnore) {
     if (shouldSnore && !this.isSnoring) {
       this.characterSnoringSound.play();
@@ -164,23 +192,34 @@ class Character extends MovableObject {
     }
   }
 
+  /**
+   * Plays the character's death animation and sound.
+   */
   handleDeathAnimation() {
     this.playAnimation(this.IMAGES_DEAD);
     this.characterSnoringSound.pause();
     this.looseGameSound.play();
-    
   }
 
+  /**
+   * Plays the character's hurt animation and sound.
+   */
   handleHurtAnimation() {
     this.playAnimation(this.IMAGES_HURT);
     this.characterSnoringSound.pause();
     this.characterHurtSound.play();
   }
 
+  /**
+   * Plays the character's jumping animation.
+   */
   handleJumpingAnimation() {
     this.playAnimation(this.IMAGES_JUMPING);
   }
 
+  /**
+   * Plays the character's lond idle animation and sound.
+   */
   handleLongIdleAnimation() {
     if (this.longIdleCounter % this.longIdleAnimationSpeed === 0) {
       this.playAnimation(this.IMAGES_LONG_IDLE);
@@ -188,6 +227,9 @@ class Character extends MovableObject {
     }
   }
 
+  /**
+   * Plays the character's idle animation and sound.
+   */
   handleIdleAnimation() {
     if (this.idleCounter % this.idleAnimationSpeed === 0) {
       this.playAnimation(this.IMAGES_IDLE);
@@ -195,10 +237,16 @@ class Character extends MovableObject {
     }
   }
 
+  /**
+   * Plays the character's walking animation.
+   */
   handleWalkingAnimation() {
     this.playAnimation(this.IMAGES_WALKING);
   }
 
+  /**
+   * Plays all character's animation.
+   */
   playCharacterAnimation() {
     if (this.isDead()) {
       this.handleDeathAnimation();
@@ -218,10 +266,14 @@ class Character extends MovableObject {
     }
   }
 
+  /**
+   * Main animation loop for the character.
+   * Updates movement state and plays the appropriate animation.
+   */
   animate() {
     setInterval(() => {
       this.updateMovementState();
-      this.correctLanding(); 
+      this.correctLanding();
       this.world.camera_x = -this.x + 100;
     }, 1000 / 60);
 

@@ -1,4 +1,4 @@
 git pull
 git add .
-git commit -m "ready for feedback"
+git commit -m "documentation JSDoc Standard"
 git push

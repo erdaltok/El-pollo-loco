@@ -1,3 +1,6 @@
+/**
+ * Represents the Endboss in the game, extending the MovableObject class.
+ */
 class Endboss extends MovableObject {
   height = 320;
   width = 320;
@@ -6,8 +9,8 @@ class Endboss extends MovableObject {
   hurtCooldown = 1200;
   lastHurtTime = 0;
   world;
-  hitCount = 0; 
-  animationFrameCounter = 0; 
+  hitCount = 0;
+  animationFrameCounter = 0;
 
   fryingChickenSound = new Audio("audio/frying_chicken_sound.mp3");
   wonGameSound = new Audio("audio/won_game_sound.mp3");
@@ -54,6 +57,9 @@ class Endboss extends MovableObject {
     "img/4_enemie_boss_chicken/5_dead/G26.png",
   ];
 
+  /**
+   * Constructor for the Endboss class.
+   */
   constructor() {
     super();
     this.loadImage(this.IMAGES_ALERT[0]);
@@ -68,17 +74,23 @@ class Endboss extends MovableObject {
     this.startModeChange();
   }
 
+  /**
+   * Starts the animation process for the endboss.
+   */
   startAnimation() {
-    clearInterval(this.animationInterval); 
+    clearInterval(this.animationInterval);
     this.animationInterval = setInterval(() => {
-      this.updateAnimation(); 
-    }, 1000 / 8); 
+      this.updateAnimation();
+    }, 1000 / 8);
   }
 
+  /**
+   * Updates the animation based on the current mode (alert, walking, attack).
+   */
   updateAnimation() {
     if (this.animateMode === "dead") {
-      clearInterval(this.animationInterval); 
-      return; 
+      clearInterval(this.animationInterval);
+      return;
     }
     switch (this.animateMode) {
       case "alert":
@@ -88,24 +100,30 @@ class Endboss extends MovableObject {
         this.playAnimation(this.IMAGES_WALKING);
         break;
       case "attack":
-        this.x -= this.speed; 
+        this.x -= this.speed;
         this.playAttackWalkingAnimation();
-        this.attackCharacter(); 
+        this.attackCharacter();
         break;
     }
   }
 
+  /**
+   * Starts the mode change process, alternating between alert and walking modes.
+   */
   startModeChange() {
-    clearInterval(this.modeChangeInterval); 
+    clearInterval(this.modeChangeInterval);
     this.modeChangeInterval = setInterval(() => {
-      this.changeMode(); 
+      this.changeMode();
     }, 2000);
   }
 
+  /**
+   * Changes the mode between alert and walking.
+   */
   changeMode() {
     if (this.animateMode === "dead") {
-      clearInterval(this.modeChangeInterval); 
-      return; 
+      clearInterval(this.modeChangeInterval);
+      return;
     }
 
     if (this.animateMode === "alert") {
@@ -116,9 +134,12 @@ class Endboss extends MovableObject {
     }
   }
 
+  /**
+   * Initiates the standard animation cycle for the endboss, alternating between alert and walking animations.
+   */
   standardAnimationEndboss() {
-    let alertDuration = 3000; 
-    let walkDuration = 2000; 
+    let alertDuration = 3000;
+    let walkDuration = 2000;
 
     setInterval(() => {
       this.playAnimation(this.IMAGES_ALERT);
@@ -128,6 +149,9 @@ class Endboss extends MovableObject {
     }, alertDuration + walkDuration);
   }
 
+  /**
+   * Controls the standard movement behavior of the endboss when in walking mode.
+   */
   standardMovingEndboss() {
     if (this.animateMode === "walking") {
       let moveDuration = 2000;
@@ -139,25 +163,32 @@ class Endboss extends MovableObject {
           this.x += moveSpeed;
         } else {
           clearInterval(moveInterval);
-          this.movingLeft = !this.movingLeft; 
+          this.movingLeft = !this.movingLeft;
         }
       }, 1000 / 60);
     }
   }
 
+  /**
+   * Plays the specified animation sequence for the endboss.
+   * @param {Array} images - An array of image paths for the animation.
+   */
   playAnimation(images) {
-    let i = this.currentImage % images.length; 
+    let i = this.currentImage % images.length;
     let path = images[i];
     this.img = this.imageCache[path];
     this.currentImage++;
   }
 
+  /**
+   * Handles the endboss being hurt, triggering damage and potentially changing to attack mode.
+   */
   isHurtEndboss() {
     const currentTime = Date.now();
     if (currentTime - this.lastHurtTime > this.hurtCooldown) {
       this.lastHurtTime = currentTime;
       this.reduceHealth();
-      this.hitCount++; 
+      this.hitCount++;
 
       this.playAnimation(this.IMAGES_HURT_ENDBOSS);
 
@@ -165,10 +196,13 @@ class Endboss extends MovableObject {
         if (this.hitCount >= 2) {
           this.endbossInAttackMode();
         }
-      }, 1000); 
+      }, 1000);
     }
   }
 
+  /**
+   * Reduces the endboss's health and checks for death.
+   */
   reduceHealth() {
     if (this.energy > 0) {
       this.energy -= 25;
@@ -180,9 +214,12 @@ class Endboss extends MovableObject {
     }
   }
 
+  /**
+   * Plays the death animation sequence for the endboss.
+   */
   playDeathAnimation() {
-    clearInterval(this.animationInterval); 
-    this.animateMode = "dead"; 
+    clearInterval(this.animationInterval);
+    this.animateMode = "dead";
 
     let deathAnimationIndex = 0;
     let deathAnimationInterval = setInterval(() => {
@@ -190,37 +227,46 @@ class Endboss extends MovableObject {
         this.img = this.imageCache[this.IMAGES_DEAD[deathAnimationIndex++]];
         this.fryingChickenSound.play();
       } else {
-        clearInterval(deathAnimationInterval); 
-        this.wonGameSound.play(); 
-        handleEndbossDeath(); 
+        clearInterval(deathAnimationInterval);
+        this.wonGameSound.play();
+        handleEndbossDeath();
 
         setTimeout(() => {
           this.fryingChickenSound.pause();
-          this.resetEndboss(); 
+          this.resetEndboss();
         }, 3000);
       }
     }, 1000);
   }
 
+  /**
+   * Resets the endboss to its initial state for a new game or level.
+   */
   resetEndboss() {
     this.x = 3400;
-    this.energy = 100; 
+    this.energy = 100;
     this.hitCount = 0;
-    this.animateMode = "alert"; 
-    this.speed = 5; 
-    this.animationFrameCounter = 0; 
+    this.animateMode = "alert";
+    this.speed = 5;
+    this.animationFrameCounter = 0;
 
     this.startAnimation();
     this.startModeChange();
   }
 
+  /**
+   * Switches the endboss to attack mode, increasing speed and changing behavior.
+   */
   endbossInAttackMode() {
     if (this.animateMode !== "attack") {
-      this.animateMode = "attack"; 
-      this.speed = 5; 
+      this.animateMode = "attack";
+      this.speed = 5;
     }
   }
 
+  /**
+   * Plays a combined walking and attack animation for the endboss in attack mode.
+   */
   playAttackWalkingAnimation() {
     if (this.animationFrameCounter % 2 === 0) {
       this.playAnimation(this.IMAGES_WALKING);
@@ -230,23 +276,18 @@ class Endboss extends MovableObject {
     this.animationFrameCounter++;
   }
 
+  /**
+   * Moves the endboss towards the character, adjusting direction based on the character's position.
+   */
   attackCharacter() {
     if (this.animateMode === "dead") {
       return;
     }
 
     if (this.world.character.x < this.x) {
-      this.x -= this.speed; 
+      this.x -= this.speed;
     } else {
-      this.x += this.speed; 
+      this.x += this.speed;
     }
   }
 }
-
-  
-
-
-
-
-
-
