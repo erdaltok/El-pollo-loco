@@ -61,7 +61,6 @@ class Chicken extends MovableObject {
       let index = this.world.level.enemies.indexOf(this);
       if (index > -1) {
         this.world.level.enemies.splice(index, 1);
-        console.log(`Chicken entfernt.`);
       }
     }, 1000);
   }
