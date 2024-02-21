@@ -4,8 +4,14 @@ class Coin extends MovableObject {
   x = 200;
   y = 300;
 
-  originalWidth = 100; // Ursprüngliche Breite speichern
-  scale = 1; // Skalierungsfaktor
+  offset = {
+    top: 40,
+    left: 40,
+    right: 40,
+    bottom: 40,
+  };
+
+  originalWidth = 100; 
 
   IMAGES_COIN = ["img/8_coin/coin_1.png", "img/8_coin/coin_2.png"];
 
@@ -15,7 +21,6 @@ class Coin extends MovableObject {
 
     this.animate();
   }
-
 
   animate() {
     setInterval(() => {

@@ -2,7 +2,7 @@ class Level {
   enemies;
   clouds;
   backgroundObjects;
-  collectibles; // Coins and bottles
+  collectibles; 
   level_end_x = 3500;
 
   constructor(enemies, clouds, backgroundObjects, collectibles) {

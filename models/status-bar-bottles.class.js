@@ -14,7 +14,7 @@ class StatusBarBottles extends DrawableObject {
     super();
     this.loadImages(this.IMAGES_BOTTLES);
     this.x = 5;
-    this.y = 90; // 20px unter der StatusBarCoins
+    this.y = 90; 
     this.height = 45;
     this.width = 200;
     this.setPercentage(0);

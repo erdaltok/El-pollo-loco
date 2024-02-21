@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -15,17 +16,18 @@
     <script src="models/coin.class.js"></script>
 
     <script src="models/cloud.class.js"></script>
-    <script src="models/background-object.class.js"></script>  
-    <script src="models/keyboard.class.js"></script>  
-    <script src="models/level.class.js"></script>  
+    <script src="models/background-object.class.js"></script>
+    <script src="models/keyboard.class.js"></script>
+    <script src="models/level.class.js"></script>
     <script src="models/endboss.class.js"></script>
-    
+
     <script src="models/status-bar.class.js"></script>
     <script src="models/status-bar-coins.class.js"></script>
     <script src="models/status-bar-bottles.class.js"></script>
+    <script src="models/status-bar-endboss.class.js"></script>
 
-    <script src="levels/level1.js"></script>  
-    <script src="models/throwable-object.class.js"></script>  
+    <!-- <script src="levels/level1.js"></script> -->
+    <script src="models/throwable-object.class.js"></script>
 
     <script src="models/world.class.js"></script>
 
@@ -35,14 +37,89 @@
 </head>
 
 <body onload="init()">
-    
-    <h1>El polllo loco</h1>
 
-<canvas id="canvas" width="720" height="480">
+    <div class="main-container">
+        <h1>El polllo loco</h1>
+            
+        <div id="canvasContainer">
+            
+            <div id="startScreenContainer">
+                <img id="startScreen" src="img/9_intro_outro_screens/start/startscreen_1.png">
+                <button id="startButton">Start Game</button>
+            </div>            
 
+            <div id="gameOverContainer">
+                <img id="gameOverScreen" src="img/9_intro_outro_screens/game_over/game over.png">
+                <button onclick="backToMenu()" class="menuButton">back to Menu</button>
+                <button onclick="startGame()" class="restartButton">restart game</button>
+            </div>
 
-</canvas>
+            <div id="youLostContainer">
+                <img id="youLostScreen" src="img/9_intro_outro_screens/game_over/oh no you lost!.png">
+                <button onclick="backToMenu()" class="menuButton">back to Menu</button>
+                <button onclick="startGame()" class="restartButton">restart game</button>
+            </div>   
+              
 
+            <div id="controlInstructions" class="control-instructions-board">
+                <div onclick="closeControlInstructions()" class="close-instructions">
+                    <img src="img/other_images_icons/bxs-x-circle.svg" alt="">
+                </div>
+
+                <div class="content-control-instructions">
+                    <div class="move-control">
+                        <img src="img/other_images_icons/bxs-right-arrow-square.svg" alt="">
+                        <span>Move right</span>
+                    </div>
+                    <div class="move-control">
+                        <img src="img/other_images_icons/bxs-left-arrow-square.svg" alt="">
+                        <span>Move left</span>
+                    </div>
+                    <div class="move-control">
+                        <img src="img/other_images_icons/icons8-space-bar-50.png" alt="">
+                        <span>Jump</span>
+                    </div>
+                    <div class="move-control">
+                        <img class="throw-button" src="img/other_images_icons/letter-d.png" alt="">
+                        <span>Throw Bottle</span>
+                    </div>
+                </div>
+            </div>
+
+            <div id="settings">
+                <audio id="backgroundMusic" loop>
+                    <source src="audio/mexican-mariachi-music.mp3" type="audio/mp3">
+                </audio>
+
+                <img onclick="openControlInstructions()" id="keyboardInstructions" class="keyboard-instructions-icon" src="img/other_images_icons/keyboard-instructions.svg" alt="">
+                <img id="volumeOn" class="volume-on-icon" src="img/other_images_icons/volume-icon.svg" alt="">
+                <img id="volumeMute" class="mute-icon" src="img/other_images_icons/mute-icon.svg" alt="">
+                <img onclick="fullscreen()" id="fullscreen" class="fullscreen-icon"
+                src="img/other_images_icons/fullscreen-icon-II.svg">
+                <img onclick="defaultScreen()" src="img/other_images_icons/fullscreen-exit.svg" id="defaultScreenSize" class="default-screen-size-icon" alt="">
+            </div>
+
+            <div id="mobileControlContainer">
+                <div id="mobileControl">
+                    <div class="left-and-right-buttons">
+                        <img id="btn-left" src="img/other_images_icons/left-button-mobile-control.png" alt="">
+                        <img id="btn-right" src="img/other_images_icons/right-button-mobile-control.png.png" alt="">
+                    </div>
+            
+                    <div class="up-arrow-and-bottle-throw-mobile-control">
+                        <img id="btn-up" src="img/other_images_icons/up-arrow-mobile-control.png" alt="">
+                        <div class="bottle-throw-button">
+                            <img id="btn-throw" src="img/6_salsa_bottle/salsa_bottle.png" alt="">
+                        </div>
+                    </div>
+                </div>            
+            </div>
+            
+            <canvas id="canvas" width="720" height="480"></canvas>
+        </div>
+
+    </div>
 
 </body>
+
 </html>
