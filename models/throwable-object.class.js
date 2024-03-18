@@ -6,9 +6,9 @@ class ThrowableObject extends MovableObject {
   height = 65;
   width = 55;
   bottleOnGround = false;
-  bottle_smash_sound = new Audio("audio/bottle_smash_sound.mp3");
+  world;
 
-  offset = { top: +40, left: +40, right: +20, bottom: +40 };
+  offset = { top: +40, left: +40, right: +40, bottom: +40 };
 
   IMAGES_THROWABLEOBJECT_BOTTLE = [
     "img/6_salsa_bottle/bottle_rotation/1_bottle_rotation.png",
@@ -39,6 +39,7 @@ class ThrowableObject extends MovableObject {
     this.loadImages(this.IMAGES_BOTTLE_SPLASH);
     this.x = x;
     this.y = y;
+    this.world = world; 
   }
 
   /**
@@ -55,7 +56,7 @@ class ThrowableObject extends MovableObject {
     world.statusBarBottles.setPercentage(world.availableBottles * 20);
 
     const animationInterval = setInterval(() => {
-      this.x += 15;
+      this.x += 10;
       this.playAnimation(this.IMAGES_THROWABLEOBJECT_BOTTLE);
 
       if (this.y >= 380) {
@@ -78,7 +79,7 @@ class ThrowableObject extends MovableObject {
       this.bottleOnGround = true;
       clearInterval(animationInterval);
       this.playSplashAnimation();
-      this.bottle_smash_sound.play();
+      this.world.bottle_smash_sound.play();
     }
   }
 

@@ -60,7 +60,7 @@ class MovableObject extends DrawableObject {
    */
   hit() {
     this.energy -= 5;
-    if (this.energy < 0) {
+    if (this.energy <= 20) {
       this.energy = 0;
     } else {
       this.lastHit = new Date().getTime();
@@ -116,7 +116,7 @@ class MovableObject extends DrawableObject {
    */
   jump() {
     if (!this.isAboveGround()) {
-      this.speedY = 27;
+      this.speedY = 29;
     }
   }
 

@@ -1,6 +1,7 @@
 let canvas;
 let world;
 let keyboard = new Keyboard();
+let soundEnabled = false;
 
 /**
  * Initializes the game by setting up the canvas, hiding it initially, and initializing game controls.
@@ -12,7 +13,7 @@ function init() {
 
   document.getElementById("startButton").addEventListener("click", startGame);
   initMusicControls();
-  initMobileControls(); 
+  initMobileControls();
 }
 
 /**
@@ -24,7 +25,8 @@ function startGame() {
     document.getElementById("startButton").style.display = "none";
     document.getElementById("youLostContainer").style.display = "none";
     document.getElementById("gameOverContainer").style.display = "none";
-      document.getElementById("mobileControl").style.display = "flex";
+    document.getElementById("mobileControl").style.display = "flex";
+    document.getElementById("keyboardInstructions").style.display = "none";
 
     canvas.style.display = "block";
 
@@ -32,10 +34,11 @@ function startGame() {
       world = new World(canvas, keyboard);
     } else {
       world.reset();
-      world.resetEnemies();  
+      world.resetEnemies();      
     }
+    toggleGameSounds(soundEnabled);// Stellen Sie sicher, dass die Soundeinstellungen beim Spielstart angewendet werden
   });
-  
+ 
 }
 
 /**
@@ -59,26 +62,28 @@ function loadLevel1(callback) {
 function backToMenu() {
   document.getElementById("youLostContainer").style.display = "none";
   document.getElementById("gameOverContainer").style.display = "none";
-  document.getElementById("startScreen").style.display = "block"; 
+  document.getElementById("startScreen").style.display = "block";
   document.getElementById("startButton").style.display = "block";
   document.getElementById("controlInstructions").style.left = "64%";
   document.getElementById("controlInstructions").style.top = "100px";
   document.getElementById("mobileControl").style.display = "none";
+   document.getElementById("keyboardInstructions").style.display = "flex";
 }
 
 /**
  * Handles the character's death by clearing all intervals, resetting enemies, and showing the "you lost" screen.
  */
 function handleCharacterDeath() {
-  if (world.character.isDead()) {
-    world.clearAllIntervals(); 
-    world.resetEnemies();
-    canvas.style.display = "none"; 
+  if (world && world.character.isDead()) {
+    world.character.stopCharacterIntervals();    
+    world.resetEnemies();   
+
+    canvas.style.display = "none";
     document.getElementById("youLostContainer").style.display = "block";
     document.getElementById("mobileControl").style.display = "none";
     document.getElementById("controlInstructions").style.left = "50%";
     document.getElementById("controlInstructions").style.top = "70px";
-    world = null;     
+    world = null;
   }
 }
 
@@ -87,40 +92,88 @@ function handleCharacterDeath() {
  */
 function handleEndbossDeath() {
   if (world) {
-    world.clearAllIntervals(); 
+    world.clearAllIntervals();
     world.resetEnemies();
 
-    canvas.style.display = "none"; 
+    canvas.style.display = "none";
     document.getElementById("gameOverContainer").style.display = "block";
     document.getElementById("mobileControl").style.display = "none";
     document.getElementById("controlInstructions").style.left = "50%";
     document.getElementById("controlInstructions").style.top = "70px";
-    world = null; 
+    world = null;
   }
 }
 
 /**
- * Initializes music controls, allowing the player to toggle background music on and off.
+ * Initializes music controls for the game. This includes setting up the initial display state for the volume icons
+ * (on or mute) based on whether the sound is enabled. It also controls the playback of the background music
+ * based on the sound settings and adds event listeners to the volume icons for toggling the sound.
  */
 function initMusicControls() {
-    const backgroundMusic = document.getElementById('backgroundMusic');
-    const volumeOnIcon = document.getElementById('volumeOn');
-    const volumeMuteIcon = document.getElementById('volumeMute');
+  const backgroundMusic = document.getElementById("backgroundMusic");
+  const volumeOnIcon = document.getElementById("volumeOn");
+  const volumeMuteIcon = document.getElementById("volumeMute");
+  volumeOnIcon.style.display = soundEnabled ? "block" : "none";
+  volumeMuteIcon.style.display = soundEnabled ? "none" : "block";
 
-    backgroundMusic.volume = 0.3; 
+  backgroundMusic.volume = 0.3;
+  if (soundEnabled) {
+    backgroundMusic.play();
+  } else {
     backgroundMusic.pause();
+  }  
+  volumeOnIcon.addEventListener("click", () => {
+    toggleSound();
+  });
+  volumeMuteIcon.addEventListener("click", () => {
+    toggleSound();
+  });
+}
 
-    volumeOnIcon.addEventListener('click', () => {
-        backgroundMusic.pause();
-        volumeOnIcon.style.display = 'none';
-        volumeMuteIcon.style.display = 'block';
-    });
+/**
+ * Toggles the sound on or off. This function updates the sound setting, plays or pauses the background music
+ * accordingly, and switches the displayed volume icon. It is called when the user clicks on one of the volume icons.
+ */
+function toggleSound() {
+  soundEnabled = !soundEnabled;
+  const backgroundMusic = document.getElementById("backgroundMusic");
+  if (soundEnabled) {
+    backgroundMusic.play();
+  } else {
+    backgroundMusic.pause();
+  }
 
-    volumeMuteIcon.addEventListener('click', () => {
-        backgroundMusic.play();
-        volumeMuteIcon.style.display = 'none';
-        volumeOnIcon.style.display = 'block';
-    });
+  document.getElementById("volumeOn").style.display = soundEnabled
+    ? "block"
+    : "none";
+  document.getElementById("volumeMute").style.display = soundEnabled
+    ? "none"
+    : "block";
+
+  if (world) {
+    toggleGameSounds(soundEnabled);
+  }
+}
+
+/**
+ * Toggles the muting of game sounds based on the provided enable parameter. When enable is true,
+ * all game sounds will be active (unmuted), and when false, all game sounds will be muted. This
+ * function is used to control the overall sound settings of the game, affecting various sound effects
+ * @param {boolean} enable - A boolean flag indicating whether to enable (unmute) or disable (mute) game sounds.
+ */
+function toggleGameSounds(enable) {
+  world.walking_sound.muted = !enable;
+  world.characterHurtSound.muted = !enable;
+  world.characterSnoringSound.muted = !enable;
+  world.looseGameSound.muted = !enable;
+  world.characterDeathSound.muted = !enable;
+  world.collect_coin_sound.muted = !enable;
+  world.endboss_hurt_sound.muted = !enable;
+  world.chickenSqueakSound.muted = !enable;
+  world.collect_bottle_sound.muted = !enable;
+  world.bottle_smash_sound.muted = !enable;
+  world.wonGameSound.muted = !enable;
+  world.fryingChickenSound.muted = !enable;
 }
 
 /**
@@ -132,9 +185,8 @@ function fullscreen() {
   let startButton = document.getElementById("startButton");
   let volumeOn = document.getElementById("volumeOn");
   let keyboardInstructions = document.getElementById("keyboardInstructions");
-
   let defaultScreenSize = document.getElementById("defaultScreenSize");
-  
+
   canvas.style.width = "100%";
   canvas.style.height = "100%";
   startScreen.style.width = "100%";
@@ -145,9 +197,8 @@ function fullscreen() {
   volumeOn.style.height = "60px";
   volumeMute.style.width = "60px";
   volumeMute.style.height = "60px";
-  keyboardInstructions.style.width = "60px"
-  keyboardInstructions.style.height = "60px"
-
+  keyboardInstructions.style.width = "60px";
+  keyboardInstructions.style.height = "60px";
   defaultScreenSize.style.width = "40px";
   defaultScreenSize.style.height = "40px";
   enterFullscreen(fullscreen);
@@ -161,17 +212,17 @@ function fullscreen() {
  */
 function defaultScreen() {
   exitFullscreen();
-   startButton.style.fontSize = "";
-   startButton.style.top = "";
-   volumeOn.style.width = "";
-   volumeOn.style.height = "";
-   volumeMute.style.width = "";
-   volumeMute.style.height = "";
-   keyboardInstructions.style.width = "";
-   keyboardInstructions.style.height = "";
-  
-   defaultScreenSize.style.width = "";
-   defaultScreenSize.style.height = "";
+  startButton.style.fontSize = "";
+  startButton.style.top = "";
+  volumeOn.style.width = "";
+  volumeOn.style.height = "";
+  volumeMute.style.width = "";
+  volumeMute.style.height = "";
+  keyboardInstructions.style.width = "";
+  keyboardInstructions.style.height = "";
+
+  defaultScreenSize.style.width = "";
+  defaultScreenSize.style.height = "";
 
   document.getElementById("fullscreen").style.display = "block";
   document.getElementById("defaultScreenSize").style.display = "none";
@@ -218,38 +269,34 @@ function closeControlInstructions() {
   document.getElementById("controlInstructions").style.display = "none";
 }
 
-
-
-window.addEventListener('keydown', (e) => {
+window.addEventListener("keydown", (e) => {
   // console.log(e.keyCode);
-if (e.keyCode == "38") {
+  if (e.keyCode == "38") {
     keyboard.UP = true;
-} 
+  }
 
-if (e.keyCode == "40") {
-  keyboard.DOWN = true;
-} 
+  if (e.keyCode == "40") {
+    keyboard.DOWN = true;
+  }
 
-if (e.keyCode == "37") {
-  keyboard.LEFT = true;
-} 
+  if (e.keyCode == "37") {
+    keyboard.LEFT = true;
+  }
 
-if (e.keyCode == "39") {
-  keyboard.RIGHT = true;
-    }
+  if (e.keyCode == "39") {
+    keyboard.RIGHT = true;
+  }
 
-if (e.keyCode == "32") {
-  keyboard.SPACE = true;
-  };
-  
-if (e.keyCode == "68") {
-  keyboard.D = true;
-    };
+  if (e.keyCode == "32") {
+    keyboard.SPACE = true;
+  }
 
+  if (e.keyCode == "68") {
+    keyboard.D = true;
+  }
 });
 
-
-window.addEventListener('keyup', (e) => {
+window.addEventListener("keyup", (e) => {
   if (e.keyCode == "38") {
     keyboard.UP = false;
   }
@@ -275,7 +322,7 @@ window.addEventListener('keyup', (e) => {
   }
   if (e.keyCode == "37" || e.keyCode == "39") {
     if (world && world.character) {
-      world.character.stopWalkingSound(); 
+      world.character.stopWalkingSound();
     }
   }
 });
@@ -290,7 +337,7 @@ function initMobileControls() {
   const btnRight = document.getElementById("btn-right");
 
   btnThrow.addEventListener("touchstart", (e) => {
-    e.preventDefault(); 
+    e.preventDefault();
     keyboard.D = true;
   });
   btnThrow.addEventListener("touchend", (e) => {
@@ -325,10 +372,3 @@ function initMobileControls() {
     keyboard.RIGHT = false;
   });
 }
-
-
-
-
-
-
-

@@ -10,9 +10,9 @@ class Character extends MovableObject {
 
   offset = {
     top: 150,
-    left: 45,
-    right: 45,
-    bottom: 35,
+    left: +30,
+    right: +45,
+    bottom: +2,
   };
 
   IMAGES_WALKING = [
@@ -79,17 +79,13 @@ class Character extends MovableObject {
   ];
 
   world;
-  walking_sound = new Audio("audio/running.mp3");
-  characterHurtSound = new Audio("audio/character_hurt_sound.mp3");
-  characterSnoringSound = new Audio("audio/snoring-sound.mp3");
-  looseGameSound = new Audio("audio/loose_game_sound.mp3");
-
   fallAsleep = 0;
   longIdleCounter = 0;
-  longIdleAnimationSpeed = 4;
-  idleAnimationSpeed = 10;
+  longIdleAnimationSpeed = 2;
+  idleAnimationSpeed = 0.02;
   idleCounter = 0;
-  longIdleAnimationSpeed = 8;
+  movementIntervalId = null;
+  animationIntervalId = null;
 
   /**
    * Constructor for the Character class.
@@ -125,14 +121,14 @@ class Character extends MovableObject {
     if (this.world.keyboard.RIGHT && this.x < this.world.level.level_end_x) {
       this.moveRight();
       this.otherDirection = false;
-      this.walking_sound.play();
+      this.world.walking_sound.play();
       isMoving = true;
     }
 
     if (this.world.keyboard.LEFT && this.x > 0) {
       this.moveLeft();
       this.otherDirection = true;
-      this.walking_sound.play();
+      this.world.walking_sound.play();
       isMoving = true;
     }
 
@@ -152,8 +148,8 @@ class Character extends MovableObject {
    * Stops the walking sound effect.
    */
   stopWalkingSound() {
-    this.walking_sound.pause();
-    this.walking_sound.currentTime = 0;
+    this.world.walking_sound.pause();
+    this.world.walking_sound.currentTime = 0;
   }
 
   /**
@@ -170,8 +166,8 @@ class Character extends MovableObject {
    * Increments the character's idle state counters.
    */
   incrementIdleState() {
-    this.fallAsleep += 1;
-    if (this.fallAsleep > 600) {
+    this.fallAsleep += 6.5;
+    if (this.fallAsleep > 1000) {
       this.longIdleCounter++;
       this.idleCounter++;
     }
@@ -183,11 +179,11 @@ class Character extends MovableObject {
    */
   manageSnoringSound(shouldSnore) {
     if (shouldSnore && !this.isSnoring) {
-      this.characterSnoringSound.play();
+      this.world.characterSnoringSound.play();
       this.isSnoring = true;
     } else if (!shouldSnore && this.isSnoring) {
-      this.characterSnoringSound.pause();
-      this.characterSnoringSound.currentTime = 0;
+      this.world.characterSnoringSound.pause();
+      this.world.characterSnoringSound.currentTime = 0;
       this.isSnoring = false;
     }
   }
@@ -197,8 +193,14 @@ class Character extends MovableObject {
    */
   handleDeathAnimation() {
     this.playAnimation(this.IMAGES_DEAD);
-    this.characterSnoringSound.pause();
-    this.looseGameSound.play();
+    this.world.characterSnoringSound.pause();
+    this.world.looseGameSound.play();
+    this.manageSnoringSound(false);
+    this.world.characterHurtSound.pause();
+
+    setTimeout(() => {
+      handleCharacterDeath();
+    }, 1500);
   }
 
   /**
@@ -206,8 +208,8 @@ class Character extends MovableObject {
    */
   handleHurtAnimation() {
     this.playAnimation(this.IMAGES_HURT);
-    this.characterSnoringSound.pause();
-    this.characterHurtSound.play();
+    this.world.characterSnoringSound.pause();
+    this.world.characterHurtSound.play();
   }
 
   /**
@@ -249,8 +251,8 @@ class Character extends MovableObject {
    */
   playCharacterAnimation() {
     if (this.isDead()) {
+      this.world.characterDeathSound.play();
       this.handleDeathAnimation();
-      this.manageSnoringSound(false);
     } else if (this.isHurt()) {
       this.handleHurtAnimation();
     } else if (this.isAboveGround()) {
@@ -268,18 +270,26 @@ class Character extends MovableObject {
 
   /**
    * Main animation loop for the character.
-   * Updates movement state and plays the appropriate animation.
    */
   animate() {
-    setInterval(() => {
+    this.movementIntervalId = setInterval(() => {
       this.updateMovementState();
       this.correctLanding();
       this.world.camera_x = -this.x + 100;
     }, 1000 / 60);
 
-    setInterval(() => {
+    this.animationIntervalId = setInterval(() => {
       this.playCharacterAnimation();
-      handleCharacterDeath();
-    }, 50);
+    }, 1000 / 12);
+  }
+
+  /**
+   * Stops the specific intervals for the character.
+   */
+  stopCharacterIntervals() {
+    clearInterval(this.movementIntervalId);
+    clearInterval(this.animationIntervalId);
   }
 }
+
+

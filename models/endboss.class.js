@@ -11,9 +11,9 @@ class Endboss extends MovableObject {
   world;
   hitCount = 0;
   animationFrameCounter = 0;
-
-  fryingChickenSound = new Audio("audio/frying_chicken_sound.mp3");
-  wonGameSound = new Audio("audio/won_game_sound.mp3");
+  speed = 6;
+  initialX = 3400; 
+  distanceMovedAfterHit = 0; 
 
   offset = { top: +20, left: +40, right: +10, bottom: +10 };
 
@@ -138,8 +138,8 @@ class Endboss extends MovableObject {
    * Initiates the standard animation cycle for the endboss, alternating between alert and walking animations.
    */
   standardAnimationEndboss() {
-    let alertDuration = 3000;
-    let walkDuration = 2000;
+    let alertDuration = 2000;
+    let walkDuration = 3000;
 
     setInterval(() => {
       this.playAnimation(this.IMAGES_ALERT);
@@ -189,14 +189,28 @@ class Endboss extends MovableObject {
       this.lastHurtTime = currentTime;
       this.reduceHealth();
       this.hitCount++;
+      this.speed += 0.2; // Increase speed with each hit
+      this.moveAfterHit();
+    }
+  }
 
-      this.playAnimation(this.IMAGES_HURT_ENDBOSS);
+  /**
+   * Moves the endboss to a new position based on the number of hits it has taken.
+   * After each hit, it moves further to the left.
+   */
+  moveAfterHit() {
+    let moveDistance = 150 * this.hitCount; // Distance based on number of hits
+    let targetX = this.initialX - moveDistance; // Calculate new target position
+    this.distanceMovedAfterHit = targetX;
 
-      setTimeout(() => {
-        if (this.hitCount >= 2) {
-          this.endbossInAttackMode();
+    if (this.x > targetX) {
+      let moveEndboss = setInterval(() => {
+        if (this.x > targetX) {
+          this.x -= this.speed;
+        } else {
+          clearInterval(moveEndboss);
         }
-      }, 1000);
+      }, 1000 / 60);
     }
   }
 
@@ -225,14 +239,15 @@ class Endboss extends MovableObject {
     let deathAnimationInterval = setInterval(() => {
       if (deathAnimationIndex < this.IMAGES_DEAD.length) {
         this.img = this.imageCache[this.IMAGES_DEAD[deathAnimationIndex++]];
-        this.fryingChickenSound.play();
+        this.world.fryingChickenSound.play();
       } else {
         clearInterval(deathAnimationInterval);
-        this.wonGameSound.play();
+        this.world.wonGameSound.play();
         handleEndbossDeath();
 
         setTimeout(() => {
-          this.fryingChickenSound.pause();
+          this.world.fryingChickenSound.pause();
+          this.world.character.characterSnoringSound.pause();
           this.resetEndboss();
         }, 3000);
       }
@@ -245,6 +260,8 @@ class Endboss extends MovableObject {
   resetEndboss() {
     this.x = 3400;
     this.energy = 100;
+    this.x = this.initialX; 
+    this.distanceMovedAfterHit = 0; 
     this.hitCount = 0;
     this.animateMode = "alert";
     this.speed = 5;

@@ -13,12 +13,20 @@ class Bottle extends MovableObject {
     "img/6_salsa_bottle/2_salsa_bottle_on_ground.png",
   ];
 
+  /**
+   * Creates a new Bottle object with specified dimensions and position.
+   * It also initializes the bottle's images for when it's on the ground and starts its animation.
+   */
   constructor() {
     super().loadImage("img/6_salsa_bottle/1_salsa_bottle_on_ground.png");
     this.loadImages(this.IMAGES_BOTTLE_ON_GROUND);
     this.animate();
   }
 
+  /**
+   * The animate method sets up a repeating action that changes the bottle's image at a set interval.
+   * This creates the appearance of animation.
+   */
   animate() {
     setInterval(() => {
       this.playAnimation(this.IMAGES_BOTTLE_ON_GROUND);

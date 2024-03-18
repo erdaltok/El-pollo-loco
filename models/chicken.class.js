@@ -9,10 +9,10 @@ class Chicken extends MovableObject {
   x = 720;
 
   offset = {
-    top: -25,
-    left: 5,
-    right: 5,
-    bottom: 10,
+    top: -7, // -25
+    left: +5,
+    right: +5,
+    bottom: +2,
   };
 
   IMAGES_WALKING = [
@@ -33,7 +33,7 @@ class Chicken extends MovableObject {
   constructor() {
     super().loadImage("img/3_enemies_chicken/chicken_normal/1_walk/1_w.png");
     this.loadImages(this.IMAGES_WALKING);
-    this.speed = 0.4 + Math.random() * 0.28;
+    this.speed = 0.9 + Math.random() * 0.28;
     this.animate();
   }
 
@@ -49,8 +49,7 @@ class Chicken extends MovableObject {
    * Handles the chicken's death by changing its image, stopping its movement and animation,
    * and removing it from the game world after a delay.
    */
-  die() {
-    
+  die() {    
     this.dead = true;
     this.isCollidable = false;
     this.loadImage("img/3_enemies_chicken/chicken_normal/2_dead/dead.png");

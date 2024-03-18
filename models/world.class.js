@@ -23,13 +23,26 @@ class World {
   collect_bottle_sound = new Audio("audio/collect_bottle_sound.mp3");
   bottle_smash_sound = new Audio("audio/bottle_smash_sound.mp3");
 
+  wonGameSound = new Audio("audio/won_game_sound.mp3");
+  fryingChickenSound = new Audio("audio/frying_chicken_sound.mp3");
+
+  walking_sound = new Audio("audio/running.mp3");
+  characterHurtSound = new Audio("audio/character_hurt_sound.mp3");
+  characterSnoringSound = new Audio("audio/snoring-sound.mp3");
+  looseGameSound = new Audio("audio/loose_game_sound.mp3");
+  characterDeathSound = new Audio("audio/characterDeathSound.mp3");
+
   /**
    * Sets the world context for characters and enemies.
    */
   setWorld() {
     this.character.world = this;
     this.level.enemies.forEach((enemy) => {
-      if (enemy instanceof Endboss || enemy instanceof Chicken) {
+      if (
+        enemy instanceof Endboss ||
+        enemy instanceof Chicken ||
+        enemy instanceof Chicks
+      ) {
         enemy.world = this;
       }
     });
@@ -60,11 +73,12 @@ class World {
    */
   run() {
     setInterval(() => {
-      this.checkCollisions();
+      this.checkCollisionsCharacterWithEnemies();
       this.checkCollisionsWithCoins();
       this.checkCollisionWithBottles();
       this.checkThrowObjects();
       this.checkBottleHitsEndboss();
+      this.checkBottleHitsChickenAndChicks();
     }, 200);
   }
 
@@ -80,9 +94,6 @@ class World {
    */
   reset() {
     this.character = new Character();
-    this.endboss = new Endboss();
-    this.endboss.resetEndboss();
-
     this.throwableObjects = [];
     this.statusBar.reset();
     this.statusBarCoins.reset();
@@ -95,6 +106,7 @@ class World {
     this.createChicks();
     this.addBottlesOnGround();
     this.addCoins();
+    this.endboss = new Endboss();
 
     this.camera_x = 0;
   }
@@ -127,15 +139,21 @@ class World {
   }
 
   /**
-   * Checks for collisions between the character and enemies, handling any interactions.
+   * Checks for collisions between the character and enemies within the level.
+   * If a collision is detected with a chicken or chick, it determines if the character is jumping on the enemy.
+   * If the character successfully jumps on the enemy, the enemy is marked as dead, and a sound effect plays.
+   * If the collision does not involve jumping on the enemy, the character takes damage, and its energy level is updated.
    */
-  checkCollisions() {
+  checkCollisionsCharacterWithEnemies() {
     this.level.enemies.forEach((enemy) => {
       if (enemy.isCollidable && this.character.isColliding(enemy)) {
-        if (enemy instanceof Chicken && this.jumpOnChicken(enemy)) {
+        if (
+          (enemy instanceof Chicken || enemy instanceof Chicks) &&
+          this.jumpOnEnemy(enemy)
+        ) {
           enemy.die();
           this.chickenSqueakSound.play();
-        } else {
+        } else if (!enemy.dead) {
           this.character.hit();
           this.statusBar.setPercentage(this.character.energy);
         }
@@ -144,17 +162,13 @@ class World {
   }
 
   /**
-   * Determines if the character successfully jumps on a chicken to defeat it.
-   * @param {MovableObject} enemy - The enemy object to check.
-   * @returns {boolean} True if the character successfully jumps on the chicken.
+   * Determines if the character is successfully jumping on an enemy.
+   * This is true if the character is above the ground and moving downwards (speedY < 0).
+   * @param {MovableObject} enemy - The enemy object the character might be jumping on.
+   * @returns {boolean} True if the character is jumping on the enemy, false otherwise.
    */
-  jumpOnChicken(enemy) {
-    return (
-      enemy instanceof Chicken &&
-      this.character.isColliding(enemy) &&
-      this.character.isAboveGround() &&
-      this.character.speedY < 0
-    );
+  jumpOnEnemy(enemy) {
+    return this.character.isAboveGround() && this.character.speedY < 0;
   }
 
   /**
@@ -170,6 +184,33 @@ class World {
             this.throwableObjects.splice(index, 1);
           });
           this.endboss_hurt_sound.play();
+        }
+      });
+    });
+  }
+
+  /**
+   * Checks for collisions between thrown bottles and chicken or chick enemies.
+   * If a collision is detected, it triggers the death of the chicken or chick, plays a sound effect,
+   * and then removes the bottle from the game by playing its splash animation and deleting it from the array of throwable objects.
+   */
+  checkBottleHitsChickenAndChicks() {
+    this.throwableObjects.forEach((bottle, index) => {
+      this.level.enemies.forEach((enemy) => {
+        if (
+          (enemy instanceof Chicken || enemy instanceof Chicks) &&
+          bottle.isColliding(enemy)
+        ) {
+          if (enemy instanceof Chicken) {
+            enemy.die();
+          } else if (enemy instanceof Chicks) {
+            enemy.die();
+          }
+          this.bottle_smash_sound.play();
+          bottle.playSplashAnimation(() => {
+            this.throwableObjects.splice(index, 1);
+          });
+          this.chickenSqueakSound.play();
         }
       });
     });
@@ -315,6 +356,8 @@ class World {
     for (let x = startPosition; x <= endPosition; x += spacing) {
       let chicks = new Chicks();
       chicks.x = x;
+      chicks.setWorld(this);
+
       this.level.enemies.push(chicks);
     }
   }
