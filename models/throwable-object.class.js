@@ -7,8 +7,9 @@ class ThrowableObject extends MovableObject {
   width = 55;
   bottleOnGround = false;
   world;
+  animationInterval = null;
 
-  offset = { top: +40, left: +40, right: +40, bottom: +40 };
+  offset = { top: 4, left: 2, right: 2, bottom: 4 };
 
   IMAGES_THROWABLEOBJECT_BOTTLE = [
     "img/6_salsa_bottle/bottle_rotation/1_bottle_rotation.png",
@@ -39,7 +40,7 @@ class ThrowableObject extends MovableObject {
     this.loadImages(this.IMAGES_BOTTLE_SPLASH);
     this.x = x;
     this.y = y;
-    this.world = world; 
+    this.world = world;
   }
 
   /**
@@ -48,22 +49,36 @@ class ThrowableObject extends MovableObject {
    * @param {World} world - The game world instance to interact with.
    */
   throw(world) {
-    if (world.availableBottles <= 0) return;
+    if (world.availableBottles <= 0) {
+      return;
+    }
     this.bottleOnGround = false;
-    this.speedY = 25;
+    this.isAboveGround();
     this.applyGravity();
+    this.speedY = 25;
     world.availableBottles--;
     world.statusBarBottles.setPercentage(world.availableBottles * 20);
-
-    const animationInterval = setInterval(() => {
-      this.x += 10;
+    this.animationInterval = setInterval(() => {
+      this.x += 14;
       this.playAnimation(this.IMAGES_THROWABLEOBJECT_BOTTLE);
-
       if (this.y >= 380) {
-        this.handleBottleLanding(animationInterval);
+        this.handleBottleLanding();
       }
       if (this.isColliding(world.endboss)) {
-        clearInterval(animationInterval);
+        clearInterval(this.animationInterval);
+        this.animationInterval = null;
+      }
+    }, 1000 / 25);
+  }
+
+  /**
+   * Applies gravity to the object, making it fall or jump.
+   */
+  applyGravityThrowAbleObject() {
+    setInterval(() => {
+      if (this.isAboveGround() || this.speedY > 0) {
+        this.y -= this.speedY;
+        this.speedY -= this.acceleration;
       }
     }, 1000 / 25);
   }
@@ -72,14 +87,28 @@ class ThrowableObject extends MovableObject {
    * Handles the landing of the bottle, stopping its movement and playing the splash animation.
    * @param {number} animationInterval - The interval ID to clear when the bottle lands.
    */
-  handleBottleLanding(animationInterval) {
+  handleBottleLanding() {
     if (!this.bottleOnGround) {
       this.y = 380;
       this.speedY = 0;
       this.bottleOnGround = true;
-      clearInterval(animationInterval);
+      clearInterval(this.animationInterval);
+      this.animationInterval = null;
       this.playSplashAnimation();
-      this.world.bottle_smash_sound.play();
+      if (this.world) {
+        this.world.bottle_smash_sound.play();
+      }
+    }
+  }
+
+  /**
+   * Stops the current animation of the object, if any, by clearing the interval.
+   * Resets the animation interval identifier to null, indicating no ongoing animation.
+   */
+  stopAnimation() {
+    if (this.animationInterval) {
+      clearInterval(this.animationInterval);
+      this.animationInterval = null;
     }
   }
 

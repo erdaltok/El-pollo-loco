@@ -9,12 +9,12 @@ class Chicken extends MovableObject {
   x = 720;
 
   offset = {
-    top: -7, // -25
-    left: +5,
-    right: +5,
-    bottom: +2,
+    top: 3, 
+    left: 4,
+    right: 4,
+    bottom: 5,
   };
-
+  
   IMAGES_WALKING = [
     "img/3_enemies_chicken/chicken_normal/1_walk/1_w.png",
     "img/3_enemies_chicken/chicken_normal/1_walk/2_w.png",
@@ -33,7 +33,7 @@ class Chicken extends MovableObject {
   constructor() {
     super().loadImage("img/3_enemies_chicken/chicken_normal/1_walk/1_w.png");
     this.loadImages(this.IMAGES_WALKING);
-    this.speed = 0.9 + Math.random() * 0.28;
+    this.speed = 0.7 + Math.random() * 0.28;
     this.animate();
   }
 
@@ -79,6 +79,6 @@ class Chicken extends MovableObject {
       if (!this.dead) {
         this.playAnimation(this.IMAGES_WALKING);
       }
-    }, 1000 / 8);
+    }, 1000 / 9);
   }
 }

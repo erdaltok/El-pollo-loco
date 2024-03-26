@@ -1,21 +1,15 @@
-/**
- * Represents the Endboss in the game, extending the MovableObject class.
- */
 class Endboss extends MovableObject {
   height = 320;
   width = 320;
   y = 123;
   energy = 100;
-  hurtCooldown = 1200;
-  lastHurtTime = 0;
-  world;
+  dead = false;
+  speed = 0;
+  intervalIds = [];
   hitCount = 0;
-  animationFrameCounter = 0;
-  speed = 6;
-  initialX = 3400; 
-  distanceMovedAfterHit = 0; 
+  vulnerable = true;
 
-  offset = { top: +20, left: +40, right: +10, bottom: +10 };
+  offset = { top: 35, left: 55, right: 55, bottom: 20 };
 
   IMAGES_ALERT = [
     "img/4_enemie_boss_chicken/2_alert/G5.png",
@@ -69,148 +63,95 @@ class Endboss extends MovableObject {
     this.loadImages(this.IMAGES_DEAD);
     this.loadImages(this.IMAGES_WALKING);
     this.x = 3400;
-    this.animateMode = "alert";
-    this.startAnimation();
-    this.startModeChange();
+    this.animate();
+    this.state = "moveLeft";
+    this.lastStateChange = Date.now();
+    this.alertImageIndex = 0;
+    this.isHurtAnimationPlaying = false;
   }
 
   /**
-   * Starts the animation process for the endboss.
+   * Initializes the animation process by calling the standard animation function.
    */
-  startAnimation() {
-    clearInterval(this.animationInterval);
-    this.animationInterval = setInterval(() => {
-      this.updateAnimation();
-    }, 1000 / 8);
+  animate() {
+    this.standardAnimation();
   }
 
   /**
-   * Updates the animation based on the current mode (alert, walking, attack).
+   * Defines the standard animation loop for the object. It repeatedly checks the current state of the object
+   * and applies the appropriate behavior based on that state. The possible states include moving left, being alert, and moving right.
+   * This function schedules the animation to be updated 13 times per second.
    */
-  updateAnimation() {
-    if (this.animateMode === "dead") {
-      clearInterval(this.animationInterval);
-      return;
-    }
-    switch (this.animateMode) {
-      case "alert":
-        this.playAnimation(this.IMAGES_ALERT);
-        break;
-      case "walking":
-        this.playAnimation(this.IMAGES_WALKING);
-        break;
-      case "attack":
-        this.x -= this.speed;
-        this.playAttackWalkingAnimation();
-        this.attackCharacter();
-        break;
-    }
+  standardAnimation() {
+    const animation = () => {
+      const now = Date.now();
+      switch (this.state) {
+        case "moveLeft":
+          this.handleMoveLeft();
+          break;
+        case "alert":
+          this.handleAlert();
+          break;
+        case "moveRight":
+          this.handleMoveRight();
+          break;
+      }
+    };
+    const intervalId = setInterval(animation, 1000 / 13);
+    this.intervalIds.push(intervalId);
   }
 
   /**
-   * Starts the mode change process, alternating between alert and walking modes.
+   * Handles the behavior when the object is moving left. It switches to the alert state after 2 seconds,
+   * or continues moving left and playing the walking animation otherwise.
    */
-  startModeChange() {
-    clearInterval(this.modeChangeInterval);
-    this.modeChangeInterval = setInterval(() => {
-      this.changeMode();
-    }, 2000);
-  }
-
-  /**
-   * Changes the mode between alert and walking.
-   */
-  changeMode() {
-    if (this.animateMode === "dead") {
-      clearInterval(this.modeChangeInterval);
-      return;
-    }
-
-    if (this.animateMode === "alert") {
-      this.animateMode = "walking";
-      this.standardMovingEndboss();
+  handleMoveLeft() {
+    const now = Date.now();
+    if (now - this.lastStateChange >= 2000) {
+      this.speed = 0;
+      this.state = "alert";
+      this.lastStateChange = now;
+      this.alertImageIndex = 0;
     } else {
-      this.animateMode = "alert";
+      this.speed = 3.5;
+      this.moveLeft();
+      this.playAnimation(this.IMAGES_WALKING);
     }
   }
 
   /**
-   * Initiates the standard animation cycle for the endboss, alternating between alert and walking animations.
+   * Handles the behavior when the object is in the alert state. It switches to the moving right state after 2 seconds,
+   * or cycles through alert images based on a calculated interval.
    */
-  standardAnimationEndboss() {
-    let alertDuration = 2000;
-    let walkDuration = 3000;
-
-    setInterval(() => {
-      this.playAnimation(this.IMAGES_ALERT);
-      setTimeout(() => {
-        this.standardMovingEndboss();
-      }, alertDuration);
-    }, alertDuration + walkDuration);
-  }
-
-  /**
-   * Controls the standard movement behavior of the endboss when in walking mode.
-   */
-  standardMovingEndboss() {
-    if (this.animateMode === "walking") {
-      let moveDuration = 2000;
-      let moveSpeed = this.movingLeft ? -this.speed : this.speed;
-      let startTime = Date.now();
-
-      let moveInterval = setInterval(() => {
-        if (Date.now() - startTime < moveDuration) {
-          this.x += moveSpeed;
-        } else {
-          clearInterval(moveInterval);
-          this.movingLeft = !this.movingLeft;
-        }
-      }, 1000 / 60);
+  handleAlert() {
+    const now = Date.now();
+    const alertInterval = 2000 / this.IMAGES_ALERT.length;
+    if (now - this.lastStateChange >= 2000) {
+      this.state = "moveRight";
+      this.lastStateChange = now;
+    } else if (
+      now - this.lastStateChange >=
+      this.alertImageIndex * alertInterval
+    ) {
+      if (this.alertImageIndex < this.IMAGES_ALERT.length) {
+        this.img = this.imageCache[this.IMAGES_ALERT[this.alertImageIndex++]];
+      }
     }
   }
 
   /**
-   * Plays the specified animation sequence for the endboss.
-   * @param {Array} images - An array of image paths for the animation.
+   * Handles the behavior when the object is moving right. It switches to the moving left state after 2 seconds,
+   * or continues moving right and playing the walking animation otherwise.
    */
-  playAnimation(images) {
-    let i = this.currentImage % images.length;
-    let path = images[i];
-    this.img = this.imageCache[path];
-    this.currentImage++;
-  }
-
-  /**
-   * Handles the endboss being hurt, triggering damage and potentially changing to attack mode.
-   */
-  isHurtEndboss() {
-    const currentTime = Date.now();
-    if (currentTime - this.lastHurtTime > this.hurtCooldown) {
-      this.lastHurtTime = currentTime;
-      this.reduceHealth();
-      this.hitCount++;
-      this.speed += 0.2; // Increase speed with each hit
-      this.moveAfterHit();
-    }
-  }
-
-  /**
-   * Moves the endboss to a new position based on the number of hits it has taken.
-   * After each hit, it moves further to the left.
-   */
-  moveAfterHit() {
-    let moveDistance = 150 * this.hitCount; // Distance based on number of hits
-    let targetX = this.initialX - moveDistance; // Calculate new target position
-    this.distanceMovedAfterHit = targetX;
-
-    if (this.x > targetX) {
-      let moveEndboss = setInterval(() => {
-        if (this.x > targetX) {
-          this.x -= this.speed;
-        } else {
-          clearInterval(moveEndboss);
-        }
-      }, 1000 / 60);
+  handleMoveRight() {
+    const now = Date.now();
+    if (now - this.lastStateChange >= 2000) {
+      this.state = "moveLeft";
+      this.lastStateChange = now;
+    } else {
+      this.speed = 3.5;
+      this.moveRight();
+      this.playAnimation(this.IMAGES_WALKING);
     }
   }
 
@@ -221,90 +162,147 @@ class Endboss extends MovableObject {
     if (this.energy > 0) {
       this.energy -= 25;
       this.world.statusBarEndboss.setPercentage(this.energy);
+    }
+  }
 
-      if (this.energy <= 0) {
+  /**
+   * Handles the endboss being hurt, triggering damage and potentially changing to attack mode.
+   */
+  isHurtEndboss() {
+    if (!this.dead && !this.isHurtAnimationPlaying) {
+      this.reduceHealth();
+      this.hitCount++;
+
+      if (this.hitCount === 4) {
         this.playDeathAnimation();
+        return;
+      }
+      this.playHurtAnimation();
+
+      if (this.hitCount === 2) {
+        this.speed = 1;
+      } else if (this.hitCount === 3) {
+        this.speed = 1.5;
       }
     }
   }
 
   /**
-   * Plays the death animation sequence for the endboss.
+   * Plays the hurt animation for the object. It stops all other animations, iterates through the hurt images,
+   * and sets up a new interval for playing the animation. Once the animation is complete, it checks if the object
+   * is not dead and has less than 4 hits to decide the next action.
+   */
+  playHurtAnimation() {
+    this.isHurtAnimationPlaying = true;
+    this.stopAllAnimations();
+    const animationDuration = 500;
+    const frames = this.IMAGES_HURT_ENDBOSS.length;
+    const intervalTime = animationDuration / frames;
+    let currentFrame = 0;
+
+    const hurtAnimationInterval = setInterval(() => {
+      if (currentFrame < frames) {
+        this.img = this.imageCache[this.IMAGES_HURT_ENDBOSS[currentFrame++]];
+      } else {
+        clearInterval(hurtAnimationInterval);
+        this.isHurtAnimationPlaying = false;
+        if (!this.dead && this.hitCount < 4) {
+          this.playAttackAnimation();
+        }
+      }
+    }, intervalTime);
+    this.intervalIds.push(hurtAnimationInterval);
+  }
+
+  /**
+   * Plays the attack animation for the object. Stops all other animations first, then iterates through
+   * the attack images at a set interval. After completing the animation, it triggers the walking animation.
+   */
+  playAttackAnimation() {
+    this.stopAllAnimations();
+    let currentFrame = 0;
+    const frames = this.IMAGES_ATTACK.length;
+    const intervalTime = 500 / frames;
+
+    const attackAnimationInterval = setInterval(() => {
+      if (currentFrame < frames) {
+        this.img = this.imageCache[this.IMAGES_ATTACK[currentFrame++]];
+      } else {
+        clearInterval(attackAnimationInterval);
+        this.isHurtAnimationPlaying = false;
+        this.speed = 20;
+        this.playWalkingAnimation();
+      }
+    }, intervalTime);
+    this.intervalIds.push(attackAnimationInterval);
+  }
+
+  /**
+   * Plays the death animation for the object. Stops all animations, sets speed to 0, and iterates through
+   * the death images at a set interval. After completing the animation, it triggers the afterDeath method.
    */
   playDeathAnimation() {
-    clearInterval(this.animationInterval);
-    this.animateMode = "dead";
+    this.stopAllAnimations();
+    this.speed = 0;
 
-    let deathAnimationIndex = 0;
-    let deathAnimationInterval = setInterval(() => {
-      if (deathAnimationIndex < this.IMAGES_DEAD.length) {
-        this.img = this.imageCache[this.IMAGES_DEAD[deathAnimationIndex++]];
+    let currentFrame = 0;
+    const frames = this.IMAGES_DEAD.length;
+    const intervalTime = 800 / frames;
+    this.dead = true;
+
+    const deathAnimationInterval = setInterval(() => {
+      if (currentFrame < frames) {
+        this.img = this.imageCache[this.IMAGES_DEAD[currentFrame++]];
         this.world.fryingChickenSound.play();
       } else {
         clearInterval(deathAnimationInterval);
-        this.world.wonGameSound.play();
-        handleEndbossDeath();
-
-        setTimeout(() => {
-          this.world.fryingChickenSound.pause();
-          this.world.character.characterSnoringSound.pause();
-          this.resetEndboss();
-        }, 3000);
+        this.afterDeath();
       }
-    }, 1000);
+    }, intervalTime);
+    this.intervalIds.push(deathAnimationInterval);
   }
 
   /**
-   * Resets the endboss to its initial state for a new game or level.
+   * Handles actions to be performed after the death animation completes, such as stopping sounds and playing
+   * the victory sound.
    */
-  resetEndboss() {
-    this.x = 3400;
-    this.energy = 100;
-    this.x = this.initialX; 
-    this.distanceMovedAfterHit = 0; 
-    this.hitCount = 0;
-    this.animateMode = "alert";
-    this.speed = 5;
-    this.animationFrameCounter = 0;
-
-    this.startAnimation();
-    this.startModeChange();
+  afterDeath() {
+    setTimeout(() => {
+      this.world.fryingChickenSound.pause();
+      this.world.characterSnoringSound.pause();
+      this.world.wonGameSound.play();
+      handleEndbossDeath();
+    }, 3000);
   }
 
   /**
-   * Switches the endboss to attack mode, increasing speed and changing behavior.
+   * Initiates the walking animation. Stops any current animations and sets up an interval to iterate
+   * through walking images, updating the object's position to the left based on its speed.
    */
-  endbossInAttackMode() {
-    if (this.animateMode !== "attack") {
-      this.animateMode = "attack";
-      this.speed = 5;
-    }
-  }
+  playWalkingAnimation() {
+    this.stopAllAnimations();
 
-  /**
-   * Plays a combined walking and attack animation for the endboss in attack mode.
-   */
-  playAttackWalkingAnimation() {
-    if (this.animationFrameCounter % 2 === 0) {
+    const walkingAnimationInterval = setInterval(() => {
+      this.moveLeft();
       this.playAnimation(this.IMAGES_WALKING);
-    } else {
-      this.playAnimation(this.IMAGES_ATTACK);
-    }
-    this.animationFrameCounter++;
+    }, 1000 / 15);
+
+    this.intervalIds.push(walkingAnimationInterval);
   }
 
   /**
-   * Moves the endboss towards the character, adjusting direction based on the character's position.
+   * Moves the object to the left by decreasing its x-coordinate based on its current speed.
    */
-  attackCharacter() {
-    if (this.animateMode === "dead") {
-      return;
-    }
+  moveLeft() {
+    this.x -= this.speed;
+  }
 
-    if (this.world.character.x < this.x) {
-      this.x -= this.speed;
-    } else {
-      this.x += this.speed;
-    }
+  /**
+   * Stops all currently running animations for this object. Clears all intervals associated
+   * with animations to halt any ongoing animated movement or actions.
+   */
+  stopAllAnimations() {
+    this.intervalIds.forEach((id) => clearInterval(id));
+    this.intervalIds = [];
   }
 }

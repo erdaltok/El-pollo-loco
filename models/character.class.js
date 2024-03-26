@@ -5,14 +5,14 @@
 class Character extends MovableObject {
   height = 250;
   width = 130;
-  y = 177;
-  speed = 4;
+  y = 15;
+  speed = 6.5;
 
   offset = {
-    top: 150,
-    left: +30,
-    right: +45,
-    bottom: +2,
+    top: 100,
+    left: 50,
+    right: 50,
+    bottom: 10,
   };
 
   IMAGES_WALKING = [
@@ -100,7 +100,7 @@ class Character extends MovableObject {
     this.loadImages(this.IMAGES_LONG_IDLE);
     this.loadImages(this.IMAGES_IDLE);
     this.isSnoring = false;
-    this.applyGravity();
+    this.applyGravityCharacter();
     this.animate();
   }
 
@@ -110,6 +110,23 @@ class Character extends MovableObject {
    */
   isAboveGround() {
     return this.y < 177;
+  }
+
+  /**
+   * Applies gravity to the character, making it fall or jump, and checks for collisions with enemies.
+   * This method continuously checks if the character is above the ground or moving upwards (speedY > 0).
+   * If so, it updates the character's vertical position (`this.y`) based on its current vertical speed (`this.speedY`)
+   * and applies acceleration to simulate gravity. It also invokes a method to check for collisions with enemies
+   * in the game world. The check is performed 25 times per second (every 40 milliseconds).
+   */
+  applyGravityCharacter() {
+    setInterval(() => {
+      if (this.isAboveGround() || this.speedY > 0) {
+        this.y -= this.speedY;
+        this.speedY -= this.acceleration;
+        this.world.checkCollisionsCharacterWithEnemies();
+      }
+    }, 1000 / 25);
   }
 
   /**

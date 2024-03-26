@@ -40,7 +40,6 @@ class StatusBarCoins extends DrawableObject {
    * Resolves the index of the image to display based on the current percentage.
    * @returns {number} The index of the image in the IMAGES_COINS array.
    */
-
   resolveImageIndex() {
     return Math.min(Math.floor(this.percentage / 20), 5);
   }

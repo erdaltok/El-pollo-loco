@@ -33,33 +33,9 @@ class DrawableObject {
    * Currently, it's commented out but can be customized and enabled as needed.
    * @param {CanvasRenderingContext2D} ctx - The rendering context of the canvas.
    */
-  // drawFrame only character and chicken
   drawFrame(ctx) {
-    if (
-      this instanceof Character ||
-      this instanceof Coin ||
-      this instanceof Chicken ||
-      this instanceof Bottle ||
-      this instanceof Endboss ||
-      this instanceof Chicks ||
-      this instanceof ThrowableObject
-    ) {
-      ctx.beginPath();
-      ctx.lineWidth = "2";
-      ctx.strokeStyle = "red";
-      ctx.rect(this.x + this.offset.left, this.y + this.offset.top, this.width - this.offset.right - this.offset.left, this.height - this.offset.bottom - this.offset.top);
-      ctx.stroke();
-    }
+    
   }
-
-  // // drawFrame all objects
-  // drawFrame(ctx) {
-  //     ctx.beginPath();
-  //     ctx.lineWidth = "5";
-  //     ctx.strokeStyle = "blue";
-  //     ctx.rect(this.x, this.y, this.width, this.height);
-  //     ctx.stroke();
-  // }
 
   /**
    * Loads multiple images from an array of paths and caches them for later use.

@@ -9,12 +9,13 @@ class MovableObject extends DrawableObject {
   energy = 100;
   lastHit = 0;
   isCollidable = true;
-
+  world;
+  
   offset = {
     top: 0,
-    left: 0,
-    right: 0,
     bottom: 0,
+    left: 15,
+    right: 25,
   };
 
   /**
@@ -24,7 +25,7 @@ class MovableObject extends DrawableObject {
     setInterval(() => {
       if (this.isAboveGround() || this.speedY > 0) {
         this.y -= this.speedY;
-        this.speedY -= this.acceleration;
+        this.speedY -= this.acceleration;      
       }
     }, 1000 / 25);
   }
@@ -37,7 +38,7 @@ class MovableObject extends DrawableObject {
     if (this instanceof ThrowableObject) {
       return true;
     } else {
-      return this.y < 177;
+      return this.y <= 177;
     }
   }
 

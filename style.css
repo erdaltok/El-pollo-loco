@@ -4,7 +4,6 @@
 
 }
 
-
 body {
     display: flex;
     justify-content: center;
@@ -38,7 +37,6 @@ h1 {
     flex-direction: column;
 }
 
-
 canvas {
     background-color: black;
     border: 2px solid rgb(4, 48, 24);
@@ -52,7 +50,6 @@ canvas {
     width: 720px;
     position: absolute;
 }
-
 
 #startScreen {
     position: absolute;
@@ -81,7 +78,6 @@ canvas {
     padding: 7px;
     border-color: #8C3415;
     cursor: pointer;
-    /* transition: all 1s ease; */
     -webkit-transform: rotate(15deg) scale(1);
     transform: rotate(5deg) scale(1);
     -webkit-transition: .3s ease-in-out;
@@ -94,11 +90,14 @@ canvas {
     transform: rotate(0) scale(1);
 }
 
-
 #gameOverContainer {
     display: none;
 }
 
+.selectionBackOrRestart {
+    display: flex;
+    justify-content: space-evenly;
+}
 
 #gameOverScreen {
     position: absolute;
@@ -141,7 +140,6 @@ canvas {
     padding: 7px;
     border-color: #8C3415;
     cursor: pointer;
-    /* transition: all 1s ease; */
     -webkit-transform: rotate(15deg) scale(1);
     transform: rotate(10deg) scale(1);
     -webkit-transition: .3s ease-in-out;
@@ -152,7 +150,6 @@ canvas {
     -webkit-transform: rotate(0) scale(1);
     transform: rotate(0) scale(1);
 }
-
 
 .restartButton {
     position: absolute;
@@ -216,7 +213,6 @@ canvas {
 .mute-icon:hover {
     background-color: rgba(0, 0, 0, 0.2);
     border-radius: 5px;
-    /* padding: 2px; */
     cursor: pointer;
 }
 
@@ -256,7 +252,8 @@ canvas {
 .control-instructions-board {
     position: absolute;
     width: 450px;
-    height: 70%;
+    min-height: 330px;
+    max-height: 500px;
     border-radius: 15px;
     background-color: rgba(237, 230, 230, 0.7);
     top: 100px;
@@ -264,7 +261,6 @@ canvas {
     transform: translate(-50%, 0);
     border: 1px solid black;
     display: none;
-
 }
 
 .move-control {
@@ -304,7 +300,6 @@ canvas {
 .close-instructions img:hover {
     background-color: #FFB300;
     border-radius: 50%;
-    /* padding: 1px; */
     cursor: pointer;
 }
 
@@ -313,13 +308,12 @@ canvas {
     width: 200px;
     height: 50px;
     z-index: 20;
-    top: 3px;
+    top: 13px;
     right: 20px;
     display: flex;
     align-items: center;
     justify-content: flex-end;
     gap: 15px;
-
 }
 
 #mobileControlContainer {
@@ -339,7 +333,6 @@ canvas {
     width: 90%;
 }
 
-
 .left-and-right-buttons img {
     width: 40px;
     height: 40px;
@@ -354,7 +347,6 @@ canvas {
     background-color: antiquewhite;
     border-radius: 50%;
 }
-
 
 .up-arrow-and-bottle-throw-mobile-control {
     display: flex;
@@ -402,10 +394,7 @@ canvas {
 }
 
 
-
-
 /* Smartphones ------------------ */
-
 
 @media only screen and (max-width: 760px) {
 
@@ -433,14 +422,9 @@ canvas {
         display: none;
     }
 
-    /* #mobileControl {
-        display: none;
-    } */
-
     .fullscreen-icon {
         display: none;
     }
-
 }
 
 @media screen and (max-height: 480px) and (orientation: landscape) {
@@ -451,7 +435,6 @@ canvas {
 
     #startButton {
         display: block;
-
     }
 
     #settings {
@@ -485,12 +468,6 @@ canvas {
         display: none;
     }
 
-
-
-    /* #mobileControl {
-        display: flex;
-    } */
-
     #mobileControlContainer {
         display: block;
     }
@@ -520,18 +497,20 @@ canvas {
 
     .menuButton {
         position: relative;
-        left: 129px;
-        top: 35px;
+        left: 0px;
+        top: 39px;
         transition: none;
         transform: none;
+        font-size: 33px;
     }
 
     .restartButton {
         position: relative;
-        top: 35px;
-        left: 192px;
+        top: 39px;
+        left: 0px;
         transition: none;
         transform: none;
+        font-size: 33px;
     }
 
     .fullscreen-icon {
@@ -541,7 +520,6 @@ canvas {
 }
 
 
-
 @media only screen and (max-width: 720px) {
 
     #canvasContainer,
@@ -549,10 +527,8 @@ canvas {
     #startScreenContainer,
     .main-container {
         width: 100%;
-
         border-radius: 0px;
         border: none;
-
     }
 
     #startScreen,
@@ -561,7 +537,6 @@ canvas {
         border-radius: 0px;
         border: none;
         width: 100%;
-
     }
 
     h1 {

@@ -22,10 +22,8 @@ class World {
   chickenSqueakSound = new Audio("audio/chicken_squeak_sound.mp3");
   collect_bottle_sound = new Audio("audio/collect_bottle_sound.mp3");
   bottle_smash_sound = new Audio("audio/bottle_smash_sound.mp3");
-
   wonGameSound = new Audio("audio/won_game_sound.mp3");
   fryingChickenSound = new Audio("audio/frying_chicken_sound.mp3");
-
   walking_sound = new Audio("audio/running.mp3");
   characterHurtSound = new Audio("audio/character_hurt_sound.mp3");
   characterSnoringSound = new Audio("audio/snoring-sound.mp3");
@@ -79,6 +77,7 @@ class World {
       this.checkThrowObjects();
       this.checkBottleHitsEndboss();
       this.checkBottleHitsChickenAndChicks();
+      this.checkCollisionCharacterWithEndboss();
     }, 200);
   }
 
@@ -92,23 +91,26 @@ class World {
   /**
    * Resets the game world to its initial state.
    */
-  reset() {
-    this.character = new Character();
+  resetWorld() {
+    this.throwableObjects.forEach((to) => to.stopAnimation());
     this.throwableObjects = [];
-    this.statusBar.reset();
-    this.statusBarCoins.reset();
-    this.statusBarEndboss.reset();
-    this.statusBarBottles.reset();
-    this.availableBottles = 0;
 
-    this.setWorld();
-    this.createChickens();
-    this.createChicks();
+    this.character = new Character();
+    this.endboss = new Endboss();
+    this.statusBar = new StatusBar();
+    this.statusBarCoins = new StatusBarCoins();
+    this.statusBarEndboss = new StatusBarEndboss();
+    this.statusBarBottles = new StatusBarBottles();
+    this.availableBottles = 0;
+    this.character.energy = 100;
+    this.level.collectibles = [];
+    this.level.enemies = [];
+
     this.addBottlesOnGround();
     this.addCoins();
-    this.endboss = new Endboss();
-
-    this.camera_x = 0;
+    this.createChickens();
+    this.createChicks();
+    this.setWorld();
   }
 
   /**
@@ -146,13 +148,18 @@ class World {
    */
   checkCollisionsCharacterWithEnemies() {
     this.level.enemies.forEach((enemy) => {
-      if (enemy.isCollidable && this.character.isColliding(enemy)) {
+      if (
+        (enemy instanceof Chicken || enemy instanceof Chicks) &&
+        this.character.isColliding(enemy)
+      ) {
         if (
-          (enemy instanceof Chicken || enemy instanceof Chicks) &&
-          this.jumpOnEnemy(enemy)
+          this.character.isAboveGround() &&
+          !this.character.isHurt() &&
+          this.character.speedY < 0
         ) {
           enemy.die();
           this.chickenSqueakSound.play();
+          this.characterCanHurtOrNot();
         } else if (!enemy.dead) {
           this.character.hit();
           this.statusBar.setPercentage(this.character.energy);
@@ -162,13 +169,28 @@ class World {
   }
 
   /**
-   * Determines if the character is successfully jumping on an enemy.
-   * This is true if the character is above the ground and moving downwards (speedY < 0).
-   * @param {MovableObject} enemy - The enemy object the character might be jumping on.
-   * @returns {boolean} True if the character is jumping on the enemy, false otherwise.
+   * Checks for and handles the collision between the character and the Endboss.
+   * If a collision is detected, it sets the character's energy to 0, updates the status bar to reflect this,
+   * and triggers the character's death animation.
    */
-  jumpOnEnemy(enemy) {
-    return this.character.isAboveGround() && this.character.speedY < 0;
+  checkCollisionCharacterWithEndboss() {
+    this.level.enemies.forEach((enemy) => {
+      if (enemy instanceof Endboss && this.character.isColliding(enemy)) {
+        this.character.energy = 0;
+        this.statusBar.setPercentage(this.character.energy);
+        this.character.handleDeathAnimation();
+      }
+    });
+  }
+
+  /**
+   * Checks if it´s possible to hurt the character or not.
+   */
+  characterCanHurtOrNot() {
+    this.characterCanNotHurt = true;
+    setTimeout(() => {
+      this.characterCanNotHurt = false;
+    }, 200);
   }
 
   /**
@@ -335,13 +357,16 @@ class World {
   createChickens() {
     let startPosition = 720;
     let endPosition = 3050;
-    let spacing = 250;
+    let minSpacing = 100;
+    let maxSpacing = 250;
 
-    for (let x = startPosition; x <= endPosition; x += spacing) {
+    for (let x = startPosition; x <= endPosition; ) {
       let chicken = new Chicken();
       chicken.x = x;
       chicken.setWorld(this);
       this.level.enemies.push(chicken);
+      let spacing = Math.random() * (maxSpacing - minSpacing) + minSpacing;
+      x += spacing;
     }
   }
 
@@ -351,14 +376,16 @@ class World {
   createChicks() {
     let startPosition = 780;
     let endPosition = 3050;
-    let spacing = 450;
+    let minSpacing = 200;
+    let maxSpacing = 450;
 
-    for (let x = startPosition; x <= endPosition; x += spacing) {
+    for (let x = startPosition; x <= endPosition; ) {
       let chicks = new Chicks();
       chicks.x = x;
       chicks.setWorld(this);
-
       this.level.enemies.push(chicks);
+      let spacing = Math.random() * (maxSpacing - minSpacing) + minSpacing;
+      x += spacing;
     }
   }
 
@@ -368,12 +395,16 @@ class World {
   addBottlesOnGround() {
     let startPosition = 500;
     let endPosition = 3000;
-    let spacing = 300;
+    let minSpacing = 250;
+    let maxSpacing = 500;
 
-    for (let x = startPosition; x <= endPosition; x += spacing) {
+    let x = startPosition;
+
+    while (x < endPosition) {
       const bottle = new Bottle();
       bottle.x = x;
       this.level.collectibles.push(bottle);
+      x += minSpacing + Math.random() * (maxSpacing - minSpacing);
     }
   }
 
@@ -383,12 +414,16 @@ class World {
   addCoins() {
     let startPosition = 700;
     let endPosition = 2800;
-    let spacing = 300;
+    let minSpacing = 250;
+    let maxSpacing = 500;
 
-    for (let x = startPosition; x <= endPosition; x += spacing) {
+    let x = startPosition;
+
+    while (x < endPosition) {
       const coin = new Coin();
       coin.x = x;
       this.level.collectibles.push(coin);
+      x += minSpacing + Math.random() * (maxSpacing - minSpacing);
     }
   }
 }

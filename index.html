@@ -27,7 +27,7 @@
     <script src="models/status-bar-bottles.class.js"></script>
     <script src="models/status-bar-endboss.class.js"></script>
 
-    <!-- <script src="levels/level1.js"></script> -->
+    <script src="levels/level1.js"></script>
     <script src="models/throwable-object.class.js"></script>
 
     <script src="models/world.class.js"></script>
@@ -46,11 +46,8 @@
             <span class="rotate-device-text">please rotate your device</span>
             <img src="img/other_images_icons/rotate-device-image.png" alt="">
         </div>
-
             
-        <div id="canvasContainer">
-
-           
+        <div id="canvasContainer">           
             
             <div id="startScreenContainer">
                 <img id="startScreen" src="img/9_intro_outro_screens/start/startscreen_1.png">
@@ -59,16 +56,19 @@
 
             <div id="gameOverContainer">
                 <img id="gameOverScreen" src="img/9_intro_outro_screens/game_over/game over.png">
+                <div class="selectionBackOrRestart">
                 <button onclick="backToMenu()" class="menuButton">back to Menu</button>
                 <button onclick="startGame()" class="restartButton">restart game</button>
+                </div>
             </div>
 
             <div id="youLostContainer">
                 <img id="youLostScreen" src="img/9_intro_outro_screens/game_over/oh no you lost!.png">
+                <div class="selectionBackOrRestart">
                 <button onclick="backToMenu()" class="menuButton">back to Menu</button>
                 <button onclick="startGame()" class="restartButton">restart game</button>
-            </div>   
-              
+                </div>
+            </div>                 
 
             <div id="controlInstructions" class="control-instructions-board">
                 <div onclick="closeControlInstructions()" class="close-instructions">
