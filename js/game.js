@@ -351,7 +351,6 @@ function closeControlInstructions() {
 }
 
 window.addEventListener("keydown", (e) => {
-  // console.log(e.keyCode);
   if (e.keyCode == "38") {
     keyboard.UP = true;
   }
