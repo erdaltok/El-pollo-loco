@@ -334,8 +334,8 @@ canvas {
 }
 
 .left-and-right-buttons img {
-    width: 40px;
-    height: 40px;
+    width: 60px;
+    height: 60px;
 }
 
 .left-and-right-buttons {
@@ -350,12 +350,12 @@ canvas {
 
 .up-arrow-and-bottle-throw-mobile-control {
     display: flex;
-    gap: 15px;
+    gap: 23px;
 }
 
 .up-arrow-and-bottle-throw-mobile-control img {
-    width: 40px;
-    height: 40px;
+    width: 60px;
+    height: 60px;
 }
 
 .up-arrow-and-bottle-throw-mobile-control img:hover {
@@ -364,15 +364,15 @@ canvas {
 }
 
 .bottle-throw-button {
-    border: 2px solid black;
+    border: 4px solid black;
     border-radius: 50%;
-    width: 37px;
-    height: 37px;
+    width: 60px;
+    height: 60px;
 }
 
 .bottle-throw-button img {
-    width: 37px;
-    height: 37px;
+    width: 60px;
+    height: 60px;
 }
 
 #rotateDeviceLayer {
@@ -514,6 +514,10 @@ canvas {
     }
 
     .fullscreen-icon {
+        display: none;
+    }
+
+    .keyboard-instructions-icon {
         display: none;
     }
 
