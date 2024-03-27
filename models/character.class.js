@@ -12,7 +12,7 @@ class Character extends MovableObject {
     top: 100,
     left: 30,
     right: 31,
-    bottom: 6, 
+    bottom: 6,
   };
 
   IMAGES_WALKING = [
@@ -231,19 +231,26 @@ class Character extends MovableObject {
   }
 
   /**
-  * Plays the character's jumping animation exactly once per jump, ensuring the animation finishes as the character lands.
+   * Plays the character's jumping animation exactly once per jump, ensuring the animation finishes as the character lands.
    */
   handleJumpingAnimation() {
     if (this.speedY > 0) {
       if (this.currentImage > 5) {
         this.currentImage = 5;
-      } else if (this.currentImage >= this.IMAGES_JUMPING.length) {
-        this.currentImage = this.IMAGES_JUMPING - 1;
       }
+    }
+    else if (this.speedY <= 0) {
+      if (this.currentImage < 6 || this.currentImage > 7) {
+        this.currentImage = 7;
+      }
+    }
+    if (this.currentImage >= this.IMAGES_JUMPING.length) {
+      this.currentImage = this.IMAGES_JUMPING.length - 2;
     }
     this.playAnimation(this.IMAGES_JUMPING);
     this.longIdleState = 0;
   }
+
 
   /**
    * Plays the character's lond idle animation and sound.
