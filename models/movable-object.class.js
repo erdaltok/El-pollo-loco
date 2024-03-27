@@ -117,7 +117,7 @@ class MovableObject extends DrawableObject {
    */
   jump() {
     if (!this.isAboveGround()) {
-      this.speedY = 29;
+      this.speedY = 30;
     }
   }
 

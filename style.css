@@ -402,12 +402,12 @@ canvas {
         display: flex;
         justify-content: center;
         text-align: center;
-        padding-left: 42px;
+        /* padding-left: 42px; */
     }
 
     #rotateDeviceLayer img {
-        width: 400px;
-        height: 400px;
+        max-width: 270px;
+        max-height: 300px;
     }
 
     #startButton {
