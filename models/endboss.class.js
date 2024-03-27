@@ -272,7 +272,7 @@ class Endboss extends MovableObject {
       this.world.characterSnoringSound.pause();
       this.world.wonGameSound.play();
       handleEndbossDeath();
-    }, 3000);
+    }, 1000);
   }
 
   /**
