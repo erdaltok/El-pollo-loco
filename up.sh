@@ -1,4 +1,4 @@
 git pull
 git add .
-git commit -m "jumpAnimation fixed"
+git commit -m "display an mobile device fixed"
 git push

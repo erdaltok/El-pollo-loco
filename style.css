@@ -9,7 +9,7 @@ body {
     justify-content: center;
     flex-direction: column;
     align-items: center;
-    min-height: 100vh;
+    min-height: 100svh;
     margin: 0;
     padding: 0;
     background-image: url('img/5_background/background_game3.webp');
@@ -308,7 +308,7 @@ canvas {
     width: 200px;
     height: 50px;
     z-index: 20;
-    top: 13px;
+    top: -2px;
     right: 20px;
     display: flex;
     align-items: center;
@@ -334,8 +334,8 @@ canvas {
 }
 
 .left-and-right-buttons img {
-    width: 60px;
-    height: 60px;
+    width: 40px;
+    height: 40px;
 }
 
 .left-and-right-buttons {
@@ -350,12 +350,13 @@ canvas {
 
 .up-arrow-and-bottle-throw-mobile-control {
     display: flex;
+    align-items: center;
     gap: 23px;
 }
 
 .up-arrow-and-bottle-throw-mobile-control img {
-    width: 60px;
-    height: 60px;
+    width: 40px;
+    height: 40px;
 }
 
 .up-arrow-and-bottle-throw-mobile-control img:hover {
@@ -366,20 +367,20 @@ canvas {
 .bottle-throw-button {
     border: 4px solid black;
     border-radius: 50%;
-    width: 60px;
-    height: 60px;
+    width: 40px;
+    height: 40px;
 }
 
 .bottle-throw-button img {
-    width: 60px;
-    height: 60px;
+    width: 40px;
+    height: 40px;
 }
 
 #rotateDeviceLayer {
     position: absolute;
     top: 0;
-    z-index: 3;
-    height: 100%;
+    z-index: 19;
+    height: 100svh;
     width: 100%;
     justify-content: center;
     align-items: center;
@@ -435,24 +436,26 @@ canvas {
 
     #startButton {
         display: block;
+        top: 20px;
     }
 
     #settings {
         display: flex;
+        right: 45px;
     }
 
     #startScreen {
         display: block;
         width: 100%;
         border-radius: 0px;
-        height: 100vh;
+        height: 100svh;
     }
 
     #youLostScreen {
         display: block;
         width: 100%;
         border-radius: 0px;
-        height: 100vh;
+        height: 100svh;
         border: none;
     }
 
@@ -460,7 +463,7 @@ canvas {
         display: block;
         width: 100%;
         border-radius: 0px;
-        height: 100vh;
+        height: 100svh;
         border: none;
     }
 
@@ -473,14 +476,14 @@ canvas {
     }
 
     #canvasContainer {
-        height: 100vh;
+        height: 100svh;
         width: 100%;
         overflow-x: hidden;
         overflow-y: hidden;
     }
 
     canvas {
-        height: 100vh;
+        height: 100svh;
         width: 100%;
         border-radius: 0px;
     }
@@ -498,7 +501,7 @@ canvas {
     .menuButton {
         position: relative;
         left: 0px;
-        top: 39px;
+        top: 28px;
         transition: none;
         transform: none;
         font-size: 33px;
@@ -506,7 +509,7 @@ canvas {
 
     .restartButton {
         position: relative;
-        top: 39px;
+        top: 28px;
         left: 0px;
         transition: none;
         transform: none;

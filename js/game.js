@@ -230,12 +230,14 @@ document.getElementById("gameOverScreen").style.backgroundImage =
   document.getElementById("gameOverScreen").style.backgroundRepeat =
     "no-repeat";
   document.getElementById("gameOverScreen").style.backgroundSize = "cover";
+  document.getElementById("gameOverScreen").style.height = "100svh";
 
   document.getElementById("youLostScreen").style.backgroundImage =
     "url('img/5_background/background_game3.webp')";
   document.getElementById("youLostScreen").style.backgroundPosition = "center";
   document.getElementById("youLostScreen").style.backgroundRepeat = "no-repeat";
   document.getElementById("youLostScreen").style.backgroundSize = "cover";
+  document.getElementById("youLostScreen").style.height = "100svh";
 };
 
 
