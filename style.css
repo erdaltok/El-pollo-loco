@@ -365,7 +365,7 @@ canvas {
     display: flex;
     align-items: center;
     gap: 98px;
-    margin-right: 50px;
+    margin-right: 16px;
     margin-bottom: -11px;
     flex-direction: row-reverse;
 }
@@ -572,4 +572,39 @@ canvas {
     .fullscreen-icon {
         display: none;
     }
+}
+
+@media screen and (max-height: 375px) and (orientation: landscape) { 
+    .left-and-right-buttons {
+        margin-left: 26px;
+    }
+
+    .up-arrow-and-bottle-throw-mobile-control {
+        margin-right: 5px;
+    }
+}
+
+@media screen and (max-height: 320px) and (orientation: landscape) {
+    .left-and-right-buttons {
+        margin-bottom: -17px;
+        margin-left: 0;
+    }
+
+    .left-and-right-buttons img {
+        width: 40px;
+        height: 40px;
+    }
+
+    .up-arrow-and-bottle-throw-mobile-control img {
+        width: 40px;
+        height: 40px;
+        margin-bottom: -6px;
+    }
+
+    .bottle-throw-button {
+        width: 40px;
+        height: 40px;
+    }
+
+
 }
