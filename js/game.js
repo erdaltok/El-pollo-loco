@@ -28,7 +28,7 @@ function startGame() {
   document.getElementById("youLostContainer").style.display = "none";
   document.getElementById("gameOverContainer").style.display = "none";
   document.getElementById("mobileControl").style.display = "flex";
-  document.getElementById("keyboardInstructions").style.display = "none";
+  // document.getElementById("keyboardInstructions").style.display = "none";
   canvas.style.display = "block";
     
   if (!world) {
@@ -50,7 +50,7 @@ function backToMenu() {
   document.getElementById("controlInstructions").style.left = "64%";
   document.getElementById("controlInstructions").style.top = "100px";
   document.getElementById("mobileControl").style.display = "none";
-  document.getElementById("keyboardInstructions").style.display = "flex";
+  // document.getElementById("keyboardInstructions").style.display = "flex";
 }
 
 /**
@@ -454,3 +454,30 @@ function initMobileControls() {
     keyboard.RIGHT = false;
   });
 }
+
+/**
+ * Adds touchstart and touchend event listeners to the provided image elements.
+ * This ensures that the background color and border-radius are applied when the image is touched,
+ * and removed when the touch ends.
+ * @param {NodeListOf<HTMLElement>} imgElements - A collection of image elements to which the listeners are added.
+ */
+const upArrowAndThrowImgs = document.querySelectorAll('.up-arrow-and-bottle-throw-mobile-control img');
+const leftAndRightImgs = document.querySelectorAll('.left-and-right-buttons img');
+
+function addTouchListenersToImages(imgElements) {
+    imgElements.forEach(img => {
+        // Hintergrundfarbe bei Berührung setzen
+        img.addEventListener('touchstart', () => {
+            img.style.backgroundColor = 'rgb(204, 124, 20)';
+            img.style.borderRadius = '50%';
+        });
+
+        img.addEventListener('touchend', () => {
+            img.style.backgroundColor = '';
+            img.style.borderRadius = '';
+        });
+    });
+}
+
+addTouchListenersToImages(upArrowAndThrowImgs);
+addTouchListenersToImages(leftAndRightImgs);

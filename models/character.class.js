@@ -102,7 +102,7 @@ class Character extends MovableObject {
     this.loadImages(this.IMAGES_IDLE);
     this.isSnoring = false;
     this.applyGravityCharacter();
-    this.animate();
+    this.animate();    
   }
 
   /**
@@ -308,7 +308,7 @@ class Character extends MovableObject {
     this.movementIntervalId = setInterval(() => {
       this.updateMovementState();
       this.correctLanding();
-      this.world.camera_x = -this.x + 100;
+      this.world.camera_x = -this.x + 130;
     }, 1000 / 60);
 
     this.animationIntervalId = setInterval(() => {
